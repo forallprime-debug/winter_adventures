@@ -32,18 +32,15 @@ export const TILE_ASSET=new URL('../assets/ui/tiles/ice-slab.webp',import.meta.u
 export const TILE_ASSETS=['cyan','violet','pink'].map(c=>new URL(`../assets/ui/tiles/ice-${c}.webp?v=provided-5`,import.meta.url).href);
 export const TILE_FILTERS=['none','none','none'];
 const slabImages=typeof Image==='undefined'?[]:TILE_ASSETS.map(src=>{const img=new Image();img.src=src;return img});
-const coloredSlabs=[];
 export async function loadTileAssets(){
  await Promise.all(slabImages.map(img=>img.decode()));
  for(let lane=0;lane<3;lane++)tileSprite(lane);
 }
 function tileSprite(lane){
- if(coloredSlabs[lane])return coloredSlabs[lane];
+ // Draw the decoded image directly. A canvas prepared inside a hidden iframe
+ // can retain an empty backing store in mobile WebViews.
  const img=slabImages[lane];
- if(!img?.complete||!img.naturalWidth)return null;
- const canvas=document.createElement('canvas');canvas.width=768;canvas.height=Math.round(768*img.naturalHeight/img.naturalWidth);
- canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
- return coloredSlabs[lane]=canvas;
+ return img?.complete && img.naturalWidth > 0 ? img : null;
 }
 // Source landmarks, measured on ice-slab.webp. Marker is the white stripe centre.
 export const SLAB={marker:.418,front:.775,span:.79,taper:.36};
@@ -73,7 +70,7 @@ function drawIceSprite(ctx,img,w,h,t,lane,y,alpha,holding){
  const rows=64;
  for(let i=0;i<rows;i++){
   const v=i/rows,r=spriteRow(w,h,t,lane,y,v);
-  ctx.drawImage(img,0,v*img.height,img.width,img.height/rows,r.x,r.y,r.width,r.unit/rows+.2);
+  ctx.drawImage(img,0,v*img.naturalHeight,img.naturalWidth,img.naturalHeight/rows,r.x,r.y,r.width,r.unit/rows+.2);
  }
  ctx.restore();
 }
