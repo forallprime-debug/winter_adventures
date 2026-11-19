@@ -8,13 +8,20 @@ test('Published map and game have all local entry-point dependencies', async () 
   await import('./build-site.js');
   const root = new URL('../_site/', import.meta.url);
   const map = await readFile(new URL('index.html', root), 'utf8');
-  assert.match(map, /src="game.html\?from=map/);
+  assert.match(map, /data-src="game.html\?from=map/);
+  assert.doesNotMatch(map, /<iframe[^>]*\ssrc=/);
+  assert.match(map, /id="map-loading"/);
+  let mapBytes = 0;
+  for (const name of ['map', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star']) {
+    mapBytes += (await stat(new URL(`assets/levels/${name}.webp`, root))).size;
+  }
+  assert.ok(mapBytes < 600_000, `Map artwork must stay under 600 KB; got ${mapBytes}`);
   assert.match(map, /telegram.org\/js\/telegram-web-app.js/);
   for (const file of ['game.html', 'levels.js', 'levels.css', 'telegram.js', 'forest-game.js',
     'forest.css', 'design/renderer.js', 'design/tokens.css', 'design/components.css',
-    'Music/duck-tales-90.m4a', 'assets/winter/landscape.png',
-    ...['cyan', 'violet', 'pink'].map(c => `assets/ui/tiles/ice-${c}.png`),
-    ...['map', 'snowman', 'character', 'point-current', 'point-done', 'point-future', 'star'].map(n => `assets/levels/${n}.png`)]) {
+    'Music/duck-tales-90.m4a', 'assets/winter/landscape.webp',
+    ...['cyan', 'violet', 'pink'].map(c => `assets/ui/tiles/ice-${c}.webp`),
+    ...['map', 'snowman', 'character', 'point-current', 'point-done', 'point-future', 'star'].map(n => `assets/levels/${n}.webp`)]) {
     assert.ok((await stat(new URL(file, root))).size > 0, file);
   }
   const chart = JSON.parse(await readFile(new URL('charts-duck-tales.json', root), 'utf8'));

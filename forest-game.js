@@ -2,7 +2,7 @@ import {impact} from './telegram.js';
 import {MusicPlayer,AssetCache} from './audio.js';
 import {preparedChart,nearest,judge,WINDOW,PERFECT_WINDOW} from './rhythm.js';
 import {starProgress,recordKey,tourMultiplier} from './scoring.js?v=hit-stars-1';
-import {readTheme,drawRoad,drawZone,drawNote,drawHold,drawSpark,laneAt,loadTileAssets,project} from './design/renderer.js?v=note-shadow-6';
+import {readTheme,drawRoad,drawZone,drawNote,drawHold,drawSpark,laneAt,loadTileAssets,project} from './design/renderer.js?v=fast-map-1';
 const $=id=>document.getElementById(id),root=$('game'),canvas=$('highway'),ctx=canvas.getContext('2d'),media=$('music'),music=new MusicPlayer(media),cache=new AssetCache();
 let w=0,h=0,theme,chart,notes=[],state='ready',score=0,combo=0,maxCombo=0,hits=0,offset=0,feedbackUntil=0,starting=false,loadRevision=0;
 const fromMap = new URLSearchParams(location.search).get('from') === 'map' && window.parent !== window;

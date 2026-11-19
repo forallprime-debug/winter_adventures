@@ -28,8 +28,8 @@ export function noteGeometry(w,h,t,lane,y){
  return {p,scale,nh,nw:p.width*t.noteWidth,pts:[top[0],top[1],bottom[1],bottom[0]]};
 }
 // The approved sprite already contains the complete ice face and realistic front edge.
-export const TILE_ASSET=new URL('../assets/ui/tiles/ice-slab.png',import.meta.url).href;
-export const TILE_ASSETS=['cyan','violet','pink'].map(c=>new URL(`../assets/ui/tiles/ice-${c}.png?v=provided-5`,import.meta.url).href);
+export const TILE_ASSET=new URL('../assets/ui/tiles/ice-slab.webp',import.meta.url).href;
+export const TILE_ASSETS=['cyan','violet','pink'].map(c=>new URL(`../assets/ui/tiles/ice-${c}.webp?v=provided-5`,import.meta.url).href);
 export const TILE_FILTERS=['none','none','none'];
 const slabImages=typeof Image==='undefined'?[]:TILE_ASSETS.map(src=>{const img=new Image();img.src=src;return img});
 const coloredSlabs=[];
@@ -45,7 +45,7 @@ function tileSprite(lane){
  canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
  return coloredSlabs[lane]=canvas;
 }
-// Source landmarks, measured on ice-slab.png. Marker is the white stripe centre.
+// Source landmarks, measured on ice-slab.webp. Marker is the white stripe centre.
 export const SLAB={marker:.418,front:.775,span:.79,taper:.36};
 export function spriteRow(w,h,t,lane,y,v){
  const p=project(lane,y,w,h,t),scale=roadWidth(y,t)/roadWidth(t.hit,t);

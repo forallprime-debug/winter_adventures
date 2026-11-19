@@ -6,22 +6,23 @@
   <meta name="theme-color" content="#102b53">
   <title>Карта уровней · Game Kids</title>
   <link rel="stylesheet" href="design/tokens.css">
-  <link rel="stylesheet" href="levels.css">
+  <link rel="stylesheet" href="levels.css?v=fast-map-1">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script type="module" src="levels.js"></script>
+  <script type="module" src="levels.js?v=fast-map-1"></script>
 </head>
-<body>
+<body class="map-pending">
+  <section id="map-loading" class="map-loading" role="status"><p id="map-loading-text">Загружаем зимнюю карту…</p><button id="retry-map" type="button" hidden>Повторить загрузку</button></section>
   <main class="map-viewport" aria-label="Выбор уровня" aria-describedby="map-help">
     <div class="map-space">
       <div class="level-map">
-        <div class="map-background"><img src="assets/levels/map.png" alt="" width="666" height="1000" fetchpriority="high"></div>
-        <img class="snowman" src="assets/levels/snowman.png" alt="" width="69" height="89">
+        <div class="map-background"><img src="assets/levels/map.webp" alt="" width="666" height="1000" fetchpriority="high"></div>
+        <img class="snowman" src="assets/levels/snowman.webp" alt="" width="69" height="89">
         <div id="level-points" role="group" aria-label="12 уровней"></div>
-        <img id="character" src="assets/levels/character.png" alt="" width="146" height="134">
+        <img id="character" src="assets/levels/character.webp" alt="" width="146" height="134">
       </div>
     </div>
   </main>
-  <iframe id="level-game" src="index.html?from=map&amp;v=note-press-2" title="Игра выбранного уровня" allow="autoplay" hidden></iframe>
+  <iframe id="level-game" data-src="index.html?from=map&amp;v=fast-map-1" title="Игра выбранного уровня" allow="autoplay" hidden></iframe>
   <div id="game-loading" hidden role="status">Готовим игру… <button id="cancel-loading" type="button">На карту</button></div>
   <p id="map-help" class="sr-only">Прокручивайте карту. Нажмите на точку, чтобы начать игру. Заработайте звёзды и вернитесь на карту, чтобы перейти к следующему уровню.</p>
   <p id="level-status" class="sr-only" role="status" aria-live="polite"></p>

@@ -10,6 +10,8 @@ const status = document.querySelector('#level-status');
 const group = document.querySelector('#level-points');
 group.setAttribute('aria-busy', 'false');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let assetAttempt = 0;
+const mapAsset = name => `assets/levels/${name}.webp${assetAttempt ? `?retry=${assetAttempt}` : ''}`;
 const progressKey = 'game2.level-map.v1';
 let scores = Array(12).fill(0);
 let current = 0;
@@ -42,10 +44,10 @@ function render() {
   buttons.forEach((button, index) => {
     const state = index === current ? 'current' : scores[index] ? 'done' : 'future';
     button.dataset.state = state;
-    button.querySelector('.ice').src = `assets/levels/point-${state}.png`;
+    button.querySelector('.ice').src = mapAsset(`point-${state}`);
     button.querySelector('.level-number').textContent = state === 'current' ? '' : String(index + 1).padStart(2, '0');
     button.querySelector('.level-stars').innerHTML = state === 'done'
-      ? '<img src="assets/levels/star.png" alt="">'.repeat(scores[index]) : '';
+      ? `<img src="${mapAsset('star')}" alt="">`.repeat(scores[index]) : '';
     button.setAttribute('aria-label', `Уровень ${index + 1}: ${state === 'current' ? 'текущий' : state === 'done' ? `пройден, звёзд: ${scores[index]}` : 'ещё не пройден'}. Начать игру`);
     if (state === 'current') button.setAttribute('aria-current', 'step');
     else button.removeAttribute('aria-current');
@@ -130,10 +132,51 @@ new ResizeObserver(() => {
   viewport.scrollTop = firstLayout ? Math.max(0, (points[current][1] + 200) * scale - viewport.clientHeight * .7) : mapScroll * scale;
 }).observe(viewport);
 
-// Warm all state images so the first transition never flashes an empty ice tile.
-for (const name of ['point-current', 'point-done', 'point-future', 'star']) {
-  const image = new Image();
-  image.src = `assets/levels/${name}.png`;
+// Load the map before spending bandwidth on the game's music and textures.
+const mapAssets = ['map', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star'];
+let loadingMap = false;
+async function loadMap() {
+  if (loadingMap) return;
+  loadingMap = true;
+  viewport.inert = true;
+  const overlay = document.querySelector('#map-loading');
+  const retry = document.querySelector('#retry-map');
+  const label = document.querySelector('#map-loading-text');
+  overlay.hidden = false;
+  retry.hidden = true;
+  label.textContent = 'Загружаем зимнюю карту…';
+  let loaded = 0;
+  const attempt = assetAttempt;
+  try {
+    await Promise.all(mapAssets.map(name => new Promise((resolve, reject) => {
+      const image = new Image();
+      const timer = setTimeout(() => reject(new Error('timeout')), 30000);
+      image.onload = async () => {
+        try {
+          await image.decode();
+          clearTimeout(timer);
+          if (loadingMap && attempt === assetAttempt) label.textContent = `Загружаем зимнюю карту… ${++loaded} / ${mapAssets.length}`;
+          resolve();
+        } catch (error) { clearTimeout(timer); reject(error); }
+      };
+      image.onerror = () => { clearTimeout(timer); reject(new Error('image')); };
+      image.src = mapAsset(name);
+    })));
+    document.querySelector('.map-background img').src = mapAsset('map');
+    document.querySelector('.snowman').src = mapAsset('snowman');
+    character.src = mapAsset('character');
+    render();
+    document.body.classList.remove('map-pending');
+    overlay.hidden = true;
+    viewport.inert = false;
+    // Preload only after all map artwork is ready. Taps still start music directly.
+    if (!gameFrame.hasAttribute('src')) gameFrame.src = gameFrame.dataset.src;
+  } catch {
+    label.textContent = 'Не удалось загрузить карту. Проверь соединение и попробуй ещё раз.';
+    retry.hidden = false;
+  } finally { loadingMap = false; }
 }
+document.querySelector('#retry-map').onclick = () => { assetAttempt = Date.now(); loadMap(); };
 render();
 character.style.transform = characterPosition(current);
+loadMap();
