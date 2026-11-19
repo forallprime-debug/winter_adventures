@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#102b53">
   <title>Карта уровней · Game Kids</title>
   <link rel="stylesheet" href="design/tokens.css">
-  <link rel="stylesheet" href="levels.css?v=fast-map-1">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script type="module" src="levels.js?v=fast-map-1"></script>
+  <link rel="stylesheet" href="levels.css?v=single-map-2">
+  <script async src="https://telegram.org/js/telegram-web-app.js" onload="window.dispatchEvent(new Event('telegram-ready'))"></script>
+  <script type="module" src="levels.js?v=single-map-2"></script>
 </head>
 <body class="map-pending">
   <section id="map-loading" class="map-loading" role="status"><p id="map-loading-text">Загружаем зимнюю карту…</p><button id="retry-map" type="button" hidden>Повторить загрузку</button></section>
@@ -22,7 +22,7 @@
       </div>
     </div>
   </main>
-  <iframe id="level-game" data-src="index.html?from=map&amp;v=fast-map-1" title="Игра выбранного уровня" allow="autoplay" hidden></iframe>
+  <iframe id="level-game" data-src="index.html?from=map&amp;v=single-map-2" title="Игра выбранного уровня" allow="autoplay" hidden></iframe>
   <div id="game-loading" hidden role="status">Готовим игру… <button id="cancel-loading" type="button">На карту</button></div>
   <p id="map-help" class="sr-only">Прокручивайте карту. Нажмите на точку, чтобы начать игру. Заработайте звёзды и вернитесь на карту, чтобы перейти к следующему уровню.</p>
   <p id="level-status" class="sr-only" role="status" aria-live="polite"></p>

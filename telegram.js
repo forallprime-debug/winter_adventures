@@ -1,5 +1,6 @@
 // Telegram lives in the top-level map, while gameplay stays in a same-origin iframe.
-const app = window.Telegram?.WebApp;
+let app = window.Telegram?.WebApp;
+let initialized = false;
 const supported = version => !!app?.initData && app.isVersionAtLeast(version);
 let backHandler = null;
 const attempt = action => { try { action(); } catch {} };
@@ -30,7 +31,10 @@ export function impact() {
 
 if (window.parent === window) {
   window.WinterTelegram = {impact};
-  if (app?.initData) {
+  function initializeTelegram() {
+    app = window.Telegram?.WebApp;
+    if (!app?.initData || initialized) return;
+    initialized = true;
     attempt(() => app.ready());
     attempt(() => app.expand());
     if (supported('6.1')) {
@@ -48,5 +52,8 @@ if (window.parent === window) {
       document.querySelector('#level-game')?.contentWindow?.levelGame?.pause();
     }));
     syncViewport();
+    setTelegramBack(backHandler);
   }
+  window.addEventListener('telegram-ready', initializeTelegram);
+  initializeTelegram();
 }

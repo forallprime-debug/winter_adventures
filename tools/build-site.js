@@ -19,8 +19,28 @@ for (const directory of ['levels', 'winter', 'ui']) {
 await mkdir(path.join(output, 'Music'), {recursive: true});
 await cp(path.join(root, 'Music/duck-tales-90.m4a'), path.join(output, 'Music/duck-tales-90.m4a'));
 await cp(path.join(root, 'index.html'), path.join(output, 'game.html'));
-const map = (await readFile(path.join(root, 'levels.html'), 'utf8'))
+let map = (await readFile(path.join(root, 'levels.html'), 'utf8'))
   .replace('data-src="index.html?from=map', 'data-src="game.html?from=map');
+// Ship the map as one response: WebViews must not need seven more successful
+// CDN connections before the first screen can be drawn.
+const images = {};
+for (const name of ['map', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star']) {
+  const data = await readFile(path.join(root, `assets/levels/${name}.webp`));
+  images[name] = `data:image/webp;base64,${data.toString('base64')}`;
+  map = map.replaceAll(`src="assets/levels/${name}.webp"`, `src="${images[name]}"`);
+}
+for (const file of ['design/tokens.css', 'levels.css']) {
+  const css = await readFile(path.join(root, file), 'utf8');
+  const link = new RegExp(`<link rel="stylesheet" href="${file.replaceAll('.', '\\.')}[^"]*">`);
+  map = map.replace(link, () => `<style>${css}</style>`);
+}
+const telegramCode = (await readFile(path.join(root, 'telegram.js'), 'utf8')).replaceAll('export ', '');
+const mapCode = (await readFile(path.join(root, 'levels.js'), 'utf8'))
+  .replace(/^import[^\n]+\n/, '');
+const script = `window.WinterMapAssets=${JSON.stringify(images)};\n${telegramCode}\n${mapCode}`;
+// Keep script contents literal: replacement strings interpret dollar sequences.
+map = map.replace(/<script type="module" src="levels.js[^"]*"><\/script>/,
+  () => `<script type="module">${script.replaceAll('</script', '<\\/script')}</script>`);
 await writeFile(path.join(output, 'index.html'), map);
 await writeFile(path.join(output, 'levels.html'), map);
 await writeFile(path.join(output, '.nojekyll'), '');

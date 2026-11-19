@@ -11,7 +11,7 @@ const group = document.querySelector('#level-points');
 group.setAttribute('aria-busy', 'false');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let assetAttempt = 0;
-const mapAsset = name => `assets/levels/${name}.webp${assetAttempt ? `?retry=${assetAttempt}` : ''}`;
+const mapAsset = name => window.WinterMapAssets?.[name] || `assets/levels/${name}.webp${assetAttempt ? `?retry=${assetAttempt}` : ''}`;
 const progressKey = 'game2.level-map.v1';
 let scores = Array(12).fill(0);
 let current = 0;
@@ -153,7 +153,8 @@ async function loadMap() {
       const timer = setTimeout(() => reject(new Error('timeout')), 30000);
       image.onload = async () => {
         try {
-          await image.decode();
+          if (!image.naturalWidth) throw new Error('empty-image');
+          // onload is sufficient; some embedded browsers reject decode() for a loaded image.
           clearTimeout(timer);
           if (loadingMap && attempt === assetAttempt) label.textContent = `Загружаем зимнюю карту… ${++loaded} / ${mapAssets.length}`;
           resolve();
