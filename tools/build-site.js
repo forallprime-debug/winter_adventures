@@ -27,7 +27,7 @@ const images = {};
 for (const name of ['map', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star']) {
   const data = await readFile(path.join(root, `assets/levels/${name}.webp`));
   images[name] = `data:image/webp;base64,${data.toString('base64')}`;
-  map = map.replaceAll(`src="assets/levels/${name}.webp"`, `src="${images[name]}"`);
+  map = map.replaceAll(`src="assets/levels/${name}.webp"`, `data-map-asset="${name}"`);
 }
 for (const file of ['design/tokens.css', 'levels.css']) {
   const css = await readFile(path.join(root, file), 'utf8');

@@ -20,6 +20,7 @@ test('Published map and game have all local entry-point dependencies', async () 
   assert.doesNotMatch(map, /<link[^>]*stylesheet/);
   assert.doesNotMatch(map, /<script[^>]*src="levels.js/);
   assert.match(map, /window.WinterMapAssets=/);
+  assert.ok(Buffer.byteLength(map) < 750_000, 'Single-page map must stay under 750 KB');
   assert.match(map, /telegram.org\/js\/telegram-web-app.js/);
   for (const file of ['game.html', 'levels.js', 'levels.css', 'telegram.js', 'forest-game.js',
     'forest.css', 'design/renderer.js', 'design/tokens.css', 'design/components.css',
