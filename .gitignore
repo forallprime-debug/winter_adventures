@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+*.log
+.env
+.env.*
+!.env.example
+_site/
+/.tools/
+/downloads/
+/generated_images/
+/рефы/
+/Audio/
+/Music/*.mp3
+/assets/levels/*preview.png
+
+/Preview/

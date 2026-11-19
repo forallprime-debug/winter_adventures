@@ -1,0 +1,11 @@
+.tour-meter{position:relative;margin-top:12px;padding-bottom:22px}
+.star-markers{position:absolute;top:0;left:16px;right:16px;height:24px;pointer-events:none}
+.star-marker{position:absolute;top:-3px;transform:translateX(-50%);font:26px/30px system-ui;color:#60584b;text-shadow:0 2px 3px #000;-webkit-text-stroke:1px #b59b6d;transition:color .2s,filter .2s}
+.star-marker.earned,#result-stars .earned{color:#ffdc80;filter:drop-shadow(0 0 6px #ffbc4677)}
+#game[data-screen=battle] .bossbar.souls-bar #tour-fill{width:0;background:linear-gradient(90deg,#a86d27,#ffdb83)}
+#star-target{position:absolute;bottom:0;left:0;right:0;text-align:center;font:11px/16px system-ui;color:#e5cb99}
+#result-stars{position:absolute;top:468px;left:0;right:0;display:flex;justify-content:center;gap:18px;color:#574539;font:48px/1 system-ui;z-index:5}
+.result-copy h2{font-size:46px}.result-copy p{line-height:1.4;font-size:14px}
+.tour-rules{font:12px/1.8 system-ui!important;color:#eed2a5!important;margin-top:18px!important}
+
+@media(prefers-reduced-motion:reduce){.star-marker{transition:none}}

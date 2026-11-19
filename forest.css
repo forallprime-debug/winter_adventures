@@ -1,0 +1,16 @@
+html,body{height:100%;overscroll-behavior:none}body{display:grid;place-items:center}#game{width:min(100%,560px);height:100dvh;max-height:1100px;container-type:inline-size}#highway{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.hud{position:absolute;top:calc(8.2% + env(safe-area-inset-top,0px));left:4.5%;right:4.5%;pointer-events:none}.scoreboard{position:absolute;top:16%;left:0;right:0}#streak{font-size:12px;min-height:18px;margin-top:7px}#pause{position:absolute;right:4%;top:calc(12px + env(safe-area-inset-top,0px))}#judgment{position:absolute;top:31%;left:0;right:0;text-align:center;font-size:18px;font-weight:650;pointer-events:none;opacity:0;text-shadow:0 2px 12px #071936}#countdown{position:absolute;top:52%;left:0;right:0;text-align:center;font-size:64px;pointer-events:none}.keyboard-hints{position:absolute;bottom:3%;left:5%;right:5%;display:flex;justify-content:space-around;font-size:11px;color:#c2e6ff66;pointer-events:none}.modal{position:absolute;inset:0;background:#030d2933;display:grid;place-items:center;padding:20px;z-index:5;overflow-y:auto}.glass-panel{width:100%;max-width:360px;text-align:center}h1{font-size:32px;letter-spacing:-.04em;margin:12px 0}h2{font-size:29px;margin:15px 0}.glass-panel p{font-size:13px;line-height:1.6}.glass-panel .help{color:#c3d8f1;margin:18px 0}.glass-panel button{display:block;width:100%;margin-top:12px}.glass-panel a{display:block;color:#a9ddff;font-size:12px;margin-top:20px}.setting{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:12px;margin:14px 0;gap:10px;text-align:left}.setting select{background:#132e57;color:white;border:1px solid #8bb5df66;border-radius:8px;padding:8px}.setting input{width:100%;accent-color:var(--cyan)}.hint{font-size:10px!important;color:var(--muted);margin-top:-5px}#status:empty,#pause-error:empty{display:none}#result-stars{display:flex;justify-content:center;gap:4px;margin-top:18px}#result-score{font-size:48px}#game[data-state=ready] .scoreboard{opacity:.35}@media(max-height:700px){.glass-panel{padding:18px}.glass-panel .help{margin:10px 0}.setting{margin:8px 0}.glass-panel a{margin-top:10px}}@media(pointer:coarse){.keyboard-hints{display:none}}
+
+/* A single warm pulse at each newly earned star; the playfield stays clear. */
+.star-edge-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  border: 2px solid #fff5ab;
+  box-shadow: inset 0 0 24px 5px #ffe25ce6, inset 0 0 75px 12px #ffba3280;
+  background:
+    linear-gradient(90deg, #ffe66b55, transparent 19%, transparent 81%, #ffe66b55),
+    linear-gradient(0deg, #ffd34d44, transparent 15%, transparent 85%, #fff09a55);
+}
+#game:not([data-state="playing"]) .star-edge-glow { visibility: hidden; }

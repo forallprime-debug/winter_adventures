@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if command -v node >/dev/null 2>&1; then
+  node_bin=$(command -v node)
+else
+  node_bin="$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
+fi
+if [ ! -x "$node_bin" ] || [ ! -f "$project_root/.tools/gh-axi/node_modules/gh-axi/dist/bin/gh-axi.js" ]; then
+  echo "gh-axi requires Node.js 20+ and the project-local .tools/gh-axi installation." >&2
+  exit 1
+fi
+export GH_BIN="$project_root/.tools/bin/gh"
+exec "$node_bin" "$project_root/.tools/gh-axi/node_modules/gh-axi/dist/bin/gh-axi.js" "$@"

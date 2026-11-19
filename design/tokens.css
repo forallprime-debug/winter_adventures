@@ -1,0 +1,21 @@
+:root {
+  --forest-bg: #102b53;
+  --text: #f7fbff;
+  --muted: #c1dbed;
+  --cyan: #70e6fa;
+  --violet: #b6a2ff;
+  --pink: #ff83ca;
+  --gold: #ffe194;
+  --lane-line: #b4efff;
+  --zone-opacity: .23;
+  --zone-inset: .024;
+  --zone-height: .15;
+  --hit-position: .84;
+  --horizon: .35;
+  --horizon-width: .28;
+  --road-width: 1.08;
+  --note-width: .86;
+  --note-height: .093;
+  --note-travel: 2.4;
+  --panel: #102e52eb;
+}
