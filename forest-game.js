@@ -1,4 +1,5 @@
 import './game-hud.js?v=orbit-prod-1';
+import {trackForLevel} from './tracks.js';
 import {impact} from './telegram.js';
 import {MusicPlayer,AssetCache} from './audio.js';
 import {preparedChart,nearest,judge,WINDOW,PERFECT_WINDOW} from './rhythm.js';
@@ -8,12 +9,14 @@ const $=id=>document.getElementById(id),root=$('game'),canvas=$('highway'),ctx=c
 let w=0,h=0,theme,chart,notes=[],state='ready',score=0,combo=0,maxCombo=0,hits=0,offset=0,feedbackUntil=0,starting=false,loadRevision=0;
 const fromMap = new URLSearchParams(location.search).get('from') === 'map' && window.parent !== window;
 let mapLevel = null;
+let tracks=[],currentTrack={id:'duck-tales',title:'Ксения Ишкина — Утиные истории',audio:'Music/duck-tales-90.m4a',chart:'charts-duck-tales.json'};
+const preparedTracks=new Map();
 const notifyMap = data => { if (fromMap) window.parent.postMessage(data, location.origin); };
 const countdownRate=1.3,countdownDuration=3/countdownRate;
 const duration=90,active=new Map(),flashes=[0,0,0],sparks=[],pressedNotes=[];
 const reducedNoteMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const storage={get(k,d='0'){try{return localStorage.getItem(k)??d}catch{return d}},set(k,v){try{localStorage.setItem(k,String(v))}catch{}}};
-const key=()=>recordKey('duck-tales',90,$('mode').value)+'.forest2';
+const key=()=>recordKey(currentTrack.id,90,$('mode').value)+'.forest2';
 $('offset').value=storage.get('forest.offset');
 function starsMarkup(n){return Array.from({length:3},(_,i)=>`<span class="reward-star${i<n?' earned':''}" aria-hidden="true"></span>`).join('')}
 function best(){const n=Number(storage.get(key()+'.stars'));$('best').innerHTML=`<span class="record-stars" role="img" aria-label="${n} из 3 звёзд">${starsMarkup(n)}</span> · Рекорд ${Number(storage.get(key())).toLocaleString('ru-RU')}`}
@@ -22,8 +25,37 @@ function resize(){if(fromMap){for(const edge of ['top','bottom','left','right'])
 new ResizeObserver(resize).observe(canvas);resize();
 function updateOffset(){$('offset-label').textContent=$('offset').value+' мс';storage.set('forest.offset',$('offset').value)}
 $('offset').oninput=updateOffset;updateOffset();
-let blobURL;
-async function load(){const rev=++loadRevision;$('start').disabled=true;$('status').textContent='Готовим музыку…';best();try{const [map,data]=await Promise.all([cache.get('charts-duck-tales.json'),cache.get('Music/duck-tales-90.m4a'),loadTileAssets()]);if(rev!==loadRevision)return;chart=preparedChart(JSON.parse(new TextDecoder().decode(map)),duration,$('mode').value);if(!chart.notes.length)throw Error('Пустая карта');if(!blobURL){blobURL=URL.createObjectURL(new Blob([data],{type:'audio/mp4'}));music.setSource(blobURL)}$('status').textContent='';$('start').textContent='Начать тур';$('start').disabled=false}catch(e){if(rev!==loadRevision)return;chart=null;$('status').textContent='Не удалось загрузить музыку. Нажми для повтора.';$('start').textContent='Повторить загрузку';$('start').disabled=false}}
+function selectTrack(track){
+ currentTrack=track;
+ const prepared=preparedTracks.get(track.id);
+ chart=preparedChart(prepared.bundle,duration,$('mode').value);
+ if(media.src!==prepared.url)music.setSource(prepared.url);
+ document.querySelector('#menu h1 + p').textContent=track.title;
+ best();
+}
+async function load(){
+ const rev=++loadRevision;$('start').disabled=true;$('status').textContent='Готовим музыку…';best();
+ try{
+  if(!tracks.length)tracks=JSON.parse(new TextDecoder().decode(await cache.get('tracks.json')));
+  // Prepare all four native media sources before the level tap, preserving audio activation.
+  let loaded=0;
+  await Promise.all([loadTileAssets(),...tracks.map(async track=>{
+   if(!preparedTracks.has(track.id)){
+    const [map,data]=await Promise.all([cache.get(track.chart),cache.get(track.audio)]);
+    const bundle=JSON.parse(new TextDecoder().decode(map));
+    if(!preparedChart(bundle,duration,$('mode').value).notes.length)throw Error('Пустая карта');
+    preparedTracks.set(track.id,{bundle,url:URL.createObjectURL(new Blob([data],{type:'audio/mp4'}))});
+   }
+   if(rev===loadRevision)$('status').textContent=`Готовим музыку… ${++loaded} / ${tracks.length}`;
+  })]);
+  if(rev!==loadRevision)return;
+  selectTrack(tracks.find(track=>track.id===currentTrack.id)||tracks[0]);
+  $('status').textContent='';$('start').textContent='Начать тур';$('start').disabled=false;
+ }catch(e){
+  if(rev!==loadRevision)return;chart=null;$('status').textContent='Не удалось загрузить музыку. Нажми для повтора.';
+  $('start').textContent='Повторить загрузку';$('start').disabled=false;
+ }
+}
 $('mode').onchange=load;
 function clock(){return music.currentTime-offset}
 function feedback(text,color){window.dispatchEvent(new CustomEvent('hud-feedback',{detail:{text,color,combo}}));$('judgment').textContent=text.charAt(0).toLocaleUpperCase('ru-RU')+text.slice(1).toLocaleLowerCase('ru-RU');$('judgment').style.color=color;$('judgment').style.opacity=1;feedbackUntil=performance.now()+500}
@@ -101,11 +133,12 @@ if (fromMap) {
   window.levelGame = {ready:false, pause, back:home, start(level) {
     if (!Number.isInteger(level) || level < 1 || level > 12) return;
     mapLevel = level;
+    selectTrack(trackForLevel(tracks,level));
     document.querySelector('#menu .eyebrow').textContent = `Game Kids · уровень ${level}`;
     document.querySelector('#result .eyebrow').textContent = `Уровень ${level} завершён`;
     root.setAttribute('aria-label', `Зимний ритм · уровень ${level}`);
     start();
   }};
 }
-load().then(() => {if(fromMap)window.levelGame.ready=true;notifyMap({type:'level-game-ready'});});requestAnimationFrame(frame);
+load().then(() => {if(fromMap)window.levelGame.ready=!!chart;if(chart)notifyMap({type:'level-game-ready'});});requestAnimationFrame(frame);
 

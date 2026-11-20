@@ -33,9 +33,11 @@ for i in range(300, min(frames-1,8850)):
  lane=max(range(3),key=lambda j:flux[j][i])
  if t-last[lane]<.65:lane=min(range(3),key=lambda j:last[j])
  notes.append(dict(time=round(t,3),lane=lane,duration=0,end=round(t,3)));last[lane]=t
-bundle=dict(version=1,duration=90,title='Ксения Ишкина — Утиные истории',audio='Music/duck-tales-90.m4a',sourceSha256=hashlib.sha256(Path('Music/Kseniia_Ishkina_-_Utinye_istorii_50024733.mp3').read_bytes()).hexdigest(),analysis={'method':'three-band energy onset detection','sampleRate':rate,'channels':2,'hopSeconds':.01,'estimatedBpm':round(6000/lag)},modes={})
+entry=json.loads(Path('tracks.json').read_text())[int(sys.argv[2])] if len(sys.argv)>2 else None
+bundle=dict(version=1,duration=90,title='Ксения Ишкина — Утиные истории',audio='Music/duck-tales-90.m4a',sourceSha256=hashlib.sha256(Path(entry['source'] if entry else 'Music/Kseniia_Ishkina_-_Utinye_istorii_50024733.mp3').read_bytes()).hexdigest(),analysis={'method':'three-band energy onset detection','sampleRate':rate,'channels':2,'hopSeconds':.01,'estimatedBpm':round(6000/lag)},modes={})
+if entry:bundle.update(title=entry['title'],audio=entry['audio'],sourceSha256=hashlib.sha256(Path(entry['source']).read_bytes()).hexdigest())
 for mode,ns in [('classic',notes),('pulse',[n for i,n in enumerate(notes) if i%2==0])]:bundle['modes'][mode]=dict(bpm=round(6000/lag),notes=ns)
-Path('charts-duck-tales.json').write_text(json.dumps(bundle,ensure_ascii=False,separators=(',',':'))+'\n')
+Path(entry['chart'] if entry else 'charts-duck-tales.json').write_text(json.dumps(bundle,ensure_ascii=False,separators=(',',':'))+'\n')
 print(json.dumps({'bpm':round(6000/lag),'counts':{k:len(v['notes']) for k,v in bundle['modes'].items()},'lanes':[sum(n['lane']==l for n in notes) for l in range(3)]}))
 assert len(notes)>50
 for mode in bundle['modes'].values():
