@@ -16,7 +16,7 @@ $('offset').value=storage.get('forest.offset');
 function starsMarkup(n){return Array.from({length:3},(_,i)=>`<span class="reward-star${i<n?' earned':''}" aria-hidden="true"></span>`).join('')}
 function best(){const n=Number(storage.get(key()+'.stars'));$('best').innerHTML=`<span class="record-stars" role="img" aria-label="${n} из 3 звёзд">${starsMarkup(n)}</span> · Рекорд ${Number(storage.get(key())).toLocaleString('ru-RU')}`}
 function setState(s){state=s;root.dataset.state=s;$('pause').hidden=s!=='playing';$('menu').hidden=s!=='ready';$('paused').hidden=s!=='paused';$('result').hidden=s!=='ended'}
-function resize(){const r=canvas.getBoundingClientRect();w=r.width;h=r.height;const d=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);ctx.setTransform(d,0,0,d,0,0);theme=readTheme(root)}
+function resize(){if(fromMap){for(const edge of ['top','bottom','left','right'])root.style.setProperty('--app-safe-'+edge,getComputedStyle(window.parent.document.documentElement).getPropertyValue('--app-safe-'+edge)||'0px')}const r=canvas.getBoundingClientRect();w=r.width;h=r.height;const d=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);ctx.setTransform(d,0,0,d,0,0);theme=readTheme(root)}
 new ResizeObserver(resize).observe(canvas);resize();
 function updateOffset(){$('offset-label').textContent=$('offset').value+' мс';storage.set('forest.offset',$('offset').value)}
 $('offset').oninput=updateOffset;updateOffset();

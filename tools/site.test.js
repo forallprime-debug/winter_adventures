@@ -24,7 +24,7 @@ test('Published map and game have all local entry-point dependencies', async () 
   assert.match(map, /telegram.org\/js\/telegram-web-app.js/);
   for (const file of ['game.html', 'levels.js', 'levels.css', 'telegram.js', 'forest-game.js',
     'forest.css', 'design/renderer.js', 'design/tokens.css', 'design/components.css',
-    'Music/duck-tales-90.m4a', 'assets/winter/landscape.webp',
+    'Music/duck-tales-90.m4a', 'assets/winter/landscape-tall.webp',
     ...['cyan', 'violet', 'pink'].map(c => `assets/ui/tiles/ice-${c}.webp`),
     ...['map', 'snowman', 'character', 'point-current', 'point-done', 'point-future', 'star'].map(n => `assets/levels/${n}.webp`)]) {
     assert.ok((await stat(new URL(file, root))).size > 0, file);
