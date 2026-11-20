@@ -23,12 +23,17 @@ test('Published map and game have all local entry-point dependencies', async () 
   assert.ok(Buffer.byteLength(map) < 750_000, 'Single-page map must stay under 750 KB');
   assert.match(map, /telegram.org\/js\/telegram-web-app.js/);
   for (const file of ['game.html', 'levels.js', 'levels.css', 'telegram.js', 'forest-game.js',
-    'forest.css', 'design/renderer.js', 'design/tokens.css', 'design/components.css',
+    'forest.css', 'game-hud.js', 'game-hud.css', 'assets/game-hud/progress-full.svg', 'assets/game-hud/progress-track.svg', 'assets/game-hud/ticks-uniform.svg', 'assets/game-hud/star.png', 'design/renderer.js', 'design/tokens.css', 'design/components.css',
     'Music/duck-tales-90.m4a', 'assets/winter/landscape-tall.webp',
     ...['cyan', 'violet', 'pink'].map(c => `assets/ui/tiles/ice-${c}.webp`),
     ...['map', 'snowman', 'character', 'point-current', 'point-done', 'point-future', 'star'].map(n => `assets/levels/${n}.webp`)]) {
     assert.ok((await stat(new URL(file, root))).size > 0, file);
   }
+  const game = await readFile(new URL('game.html', root), 'utf8');
+  assert.doesNotMatch(game, /data-demo|lab-controls|hud-lab/);
+  const engine = await readFile(new URL('forest-game.js', root), 'utf8');
+  assert.doesNotMatch(engine, /hudLab|lab-test-hit|hits\s*\*\s*5/);
+  assert.match(engine, /starProgress\(hits,notes.length\)/);
   const chart = JSON.parse(await readFile(new URL('charts-duck-tales.json', root), 'utf8'));
   for (const mode of ['classic', 'pulse']) assert.ok(preparedChart(chart, 90, mode).notes.length > 0);
 });

@@ -7,7 +7,7 @@ const output = path.join(root, '_site');
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
 const files = ['levels.html', 'levels.css', 'levels.js', 'telegram.js', 'forest.css',
-  'forest-game.js', 'audio.js', 'rhythm.js', 'scoring.js', 'charts-duck-tales.json',
+  'forest-game.js', 'game-hud.js', 'game-hud.css', 'audio.js', 'rhythm.js', 'scoring.js', 'charts-duck-tales.json',
   'ui-kit.html', 'ui-kit.css', 'ui-kit.js'];
 for (const file of files) await cp(path.join(root, file), path.join(output, file));
 await cp(path.join(root, 'design'), path.join(output, 'design'), {recursive: true});
@@ -16,6 +16,7 @@ for (const directory of ['levels', 'winter', 'ui']) {
     recursive: true, filter: source => !source.endsWith('.png')
   });
 }
+await cp(path.join(root, 'assets/game-hud'), path.join(output, 'assets/game-hud'), {recursive:true});
 await mkdir(path.join(output, 'Music'), {recursive: true});
 await cp(path.join(root, 'Music/duck-tales-90.m4a'), path.join(output, 'Music/duck-tales-90.m4a'));
 await cp(path.join(root, 'index.html'), path.join(output, 'game.html'));

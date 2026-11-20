@@ -1,3 +1,4 @@
+import './game-hud.js?v=orbit-prod-1';
 import {impact} from './telegram.js';
 import {MusicPlayer,AssetCache} from './audio.js';
 import {preparedChart,nearest,judge,WINDOW,PERFECT_WINDOW} from './rhythm.js';
@@ -8,6 +9,7 @@ let w=0,h=0,theme,chart,notes=[],state='ready',score=0,combo=0,maxCombo=0,hits=0
 const fromMap = new URLSearchParams(location.search).get('from') === 'map' && window.parent !== window;
 let mapLevel = null;
 const notifyMap = data => { if (fromMap) window.parent.postMessage(data, location.origin); };
+const countdownRate=1.3,countdownDuration=3/countdownRate;
 const duration=90,active=new Map(),flashes=[0,0,0],sparks=[],pressedNotes=[];
 const reducedNoteMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const storage={get(k,d='0'){try{return localStorage.getItem(k)??d}catch{return d}},set(k,v){try{localStorage.setItem(k,String(v))}catch{}}};
@@ -24,7 +26,7 @@ let blobURL;
 async function load(){const rev=++loadRevision;$('start').disabled=true;$('status').textContent='Готовим музыку…';best();try{const [map,data]=await Promise.all([cache.get('charts-duck-tales.json'),cache.get('Music/duck-tales-90.m4a'),loadTileAssets()]);if(rev!==loadRevision)return;chart=preparedChart(JSON.parse(new TextDecoder().decode(map)),duration,$('mode').value);if(!chart.notes.length)throw Error('Пустая карта');if(!blobURL){blobURL=URL.createObjectURL(new Blob([data],{type:'audio/mp4'}));music.setSource(blobURL)}$('status').textContent='';$('start').textContent='Начать тур';$('start').disabled=false}catch(e){if(rev!==loadRevision)return;chart=null;$('status').textContent='Не удалось загрузить музыку. Нажми для повтора.';$('start').textContent='Повторить загрузку';$('start').disabled=false}}
 $('mode').onchange=load;
 function clock(){return music.currentTime-offset}
-function feedback(text,color){$('judgment').textContent=text;$('judgment').style.color=color;$('judgment').style.opacity=1;feedbackUntil=performance.now()+500}
+function feedback(text,color){window.dispatchEvent(new CustomEvent('hud-feedback',{detail:{text,color,combo}}));$('judgment').textContent=text.charAt(0).toLocaleUpperCase('ru-RU')+text.slice(1).toLocaleLowerCase('ru-RU');$('judgment').style.color=color;$('judgment').style.opacity=1;feedbackUntil=performance.now()+500}
 const starGlow = document.createElement('div');
 starGlow.className = 'star-edge-glow';
 starGlow.setAttribute('aria-hidden', 'true');
@@ -41,7 +43,7 @@ function flashStarEdges() {
     {opacity: 0}
   ], {duration: reduced ? 500 : 850, easing: 'ease-out'});
 }
-function updateHUD(){const r=starProgress(hits,notes.length);if(state==='playing'&&r.stars>earnedStars)flashStarEdges();earnedStars=r.stars;$('score').textContent=score.toLocaleString('ru-RU');$('multiplier').textContent='×'+tourMultiplier(combo);$('streak').textContent=combo>=5?`${combo} подряд`:'';$('meter').style.setProperty('--progress',r.percent+'%');$('meter').setAttribute('aria-valuenow',String(Math.round(r.percent)));$('meter').setAttribute('aria-valuetext',`${Math.floor(r.percent)}% нот трека сыграно, ${r.stars} из 3 звёзд`);document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('earned',r.stars>i))}
+function updateHUD(){const r=starProgress(hits,notes.length);window.dispatchEvent(new CustomEvent('hud-progress',{detail:{percent:r.percent,stars:r.stars,score,combo,state}}));if(state==='playing'&&r.stars>earnedStars)flashStarEdges();earnedStars=r.stars;$('score').textContent=score.toLocaleString('ru-RU');$('multiplier').textContent='×'+tourMultiplier(combo);$('streak').textContent=combo>=5?`${combo} подряд`:'';$('meter').style.setProperty('--progress',r.percent+'%');$('meter').setAttribute('aria-valuenow',String(Math.round(r.percent)));$('meter').setAttribute('aria-valuetext',`${Math.floor(r.percent)}% нот трека сыграно, ${r.stars} из 3 звёзд`);document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('earned',r.stars>i))}
 async function start(){if(starting)return;if(!chart){load();return}starting=true;$('start').disabled=true;$('again').disabled=true;$('judgment').style.opacity=0;feedbackUntil=0;try{music.stop();const play=music.play();await play;notes=chart.notes.map(n=>({...n,state:'pending'}));score=combo=maxCombo=hits=0;earnedStars=0;starGlowAnimation?.cancel();offset=Number($('offset').value)/1000;active.clear();sparks.length=0;pressedNotes.length=0;flashes.fill(0);setState('playing');$('start').blur();$('again').blur();updateHUD()}catch(e){setState('ready');$('status').textContent='Не удалось включить звук. Нажми «Начать тур» ещё раз.'}finally{starting=false;$('start').disabled=false;$('again').disabled=false}}
 function complete(n){n.state='hit';score+=50*n.holdMultiplier;feedback('УДЕРЖАНО',theme.colors[n.lane]);sparks.push({lane:n.lane,at:performance.now()});updateHUD()}
 function resetInputs(){for(const n of notes)if(n.state==='holding'){n.state='broken';combo=0}active.clear();flashes.fill(0);updateHUD()}
@@ -80,13 +82,13 @@ $('start').onclick=start;$('again').onclick=start;$('pause').onclick=pause;$('re
 function frame(now){requestAnimationFrame(frame);ctx.clearRect(0,0,w,h);drawRoad(ctx,w,h,theme);drawZone(ctx,w,h,theme,flashes.map(t=>t>now));const t=clock();
  if(state==='playing'){
   for(const n of notes){if(n.state==='pending'&&t-n.time>WINDOW){n.state='miss';miss('ПРОМАХ')}else if(n.state==='holding'){if(t>=n.end-.04)complete(n);else if(![...active.values()].includes(n.lane)&&t>(n.grace||0)){n.state='broken';miss('ОБРЫВ')}}}
-  if(music.currentTime>=duration)finish();$('countdown').textContent=music.currentTime<3?String(Math.ceil(3-music.currentTime)):'';
+  if(music.currentTime>=duration)finish();$('countdown').textContent=music.currentTime<countdownDuration?String(Math.ceil(3-music.currentTime*countdownRate)):'';
  }
  const shown=state==='ready'?[{lane:1,time:t+2,duration:0,state:'pending'},{lane:0,time:t+1.35,duration:0,state:'pending'},{lane:2,time:t+.8,duration:0,state:'pending'}]:notes;
  for(const n of [...shown].reverse()){if(!['pending','holding'].includes(n.state))continue;const delta=n.time-t;if(delta>theme.travel||delta<-.5&&n.state!=='holding')continue;const y=n.state==='holding'?theme.hit:theme.hit-delta/theme.travel*(theme.hit-theme.horizon);if(n.duration)drawHold(ctx,w,h,theme,n.lane,y,Math.max(theme.horizon,theme.hit-(n.end-t)/theme.travel*(theme.hit-theme.horizon)));if(n.state==='holding')drawPressedNote(n.lane,y,(now-n.pressedAt)/1000,{holding:true});else drawNote(ctx,w,h,theme,n.lane,y);}
  for(let i=pressedNotes.length-1;i>=0;i--){const n=pressedNotes[i],age=(now-n.at)/1000;if(age>.22||state!=='playing')pressedNotes.splice(i,1);else drawPressedNote(n.lane,n.y,age);}
  for(let i=sparks.length-1;i>=0;i--){const s=sparks[i],age=(now-s.at)/1000;if(age>.45)sparks.splice(i,1);else drawSpark(ctx,w,h,theme,s.lane,age)}
- if(now>feedbackUntil)$('judgment').style.opacity=0;
+ if(now>feedbackUntil){$('judgment').style.opacity=1;$('judgment').textContent='Ваш счёт';$('judgment').style.color=''}const orbit=document.querySelector('#orbit');orbit.classList.toggle('counting',(state==='ready'||(state==='playing'||state==='paused')&&music.currentTime<countdownDuration));if(state==='ready')$('countdown').textContent='3';orbit.style.setProperty('--countdown-angle',`${(Math.max(0,music.currentTime)*countdownRate%1)*360}deg`);
 }
 if (fromMap) {
   $('leave').textContent = 'На карту';
@@ -106,3 +108,4 @@ if (fromMap) {
   }};
 }
 load().then(() => {if(fromMap)window.levelGame.ready=true;notifyMap({type:'level-game-ready'});});requestAnimationFrame(frame);
+

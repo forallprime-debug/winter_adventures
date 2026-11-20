@@ -1,0 +1,61 @@
+#orbit{position:absolute;left:50%;top:7.125%;width:58.333%;aspect-ratio:1;transform:translateX(-50%);container-type:inline-size;pointer-events:none;z-index:2;isolation:isolate;border-radius:50%;background:#0000000a;backdrop-filter:blur(10px)}#orbit img{max-width:none}.orbit-base{position:absolute;inset:0;width:100%;height:100%}.orbit-progress{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 180deg,#00c8ff,#a7f33b calc(var(--progress,0)*1%),transparent 0);mask:radial-gradient(circle,transparent 56.4%,#000 57.5%,#000 69%,transparent 70.5%);filter:drop-shadow(0 0 5px #52e2ff)}.orbit-stars{position:absolute;left:17.14%;top:-10.95%;width:65.71%;height:21.9%;display:flex;align-items:center;justify-content:center;gap:0}.orbit-stars .star{width:28.9%;height:auto;opacity:.3;filter:grayscale(1)}.orbit-stars .star:first-child{transform:rotate(-14deg) translateY(3px)}.orbit-stars .star:last-child{transform:rotate(14deg) translateY(3px)}.orbit-stars .star.earned{opacity:1;filter:drop-shadow(0 0 5px #ffce48)}#orbit .scoreboard{position:absolute;inset:0;opacity:1!important;text-shadow:none}#orbit #judgment{position:absolute;top:27.14%;left:0;right:0;font-size:9.52cqw;line-height:1.2;font-weight:650;color:#a8f2ff;opacity:1}#orbit #score{position:absolute;top:38.57%;left:0;right:0;font-size:20cqw;line-height:1.2;font-weight:850;letter-spacing:-.8cqw}#orbit .combo-label{position:absolute;top:68.57%;left:0;right:0;margin:0;font-size:8.57cqw;line-height:1;color:#a8f2ff}#orbit #streak{display:none}.orbit-glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:161%;height:161%;opacity:0;z-index:-1}.combo-glow{width:187%;height:187%}.checkpoint{position:absolute;width:2.857%;height:2.857%;transform:translate(-50%,-50%);border-radius:50%;background:#fff6;box-shadow:0 0 3px #85dfff}.checkpoint.reached{background:#fff8a1;box-shadow:0 0 9px #ffed57}.timer-face{display:none;position:absolute;inset:0}.timer-face>img:first-child{width:100%;height:100%}.timer-face .timer-ticks{position:absolute;left:13.33%;top:13.33%;width:73.33%;height:73.33%}#orbit #countdown{inset:0;display:grid;place-items:center;font-size:38.1cqw;font-weight:850;line-height:1}#orbit.counting .timer-face{display:block}#orbit.counting .scoreboard,#orbit.counting .orbit-stars,#orbit.counting .orbit-progress,#orbit.counting .checkpoints{visibility:hidden}#pause{top:9.625%;right:4.44%;width:13.33%;height:auto;aspect-ratio:1;background:none;border:0;z-index:3}#pause img{position:absolute;width:100%;height:100%}#pause span{position:relative;font-size:30px;font-weight:900}.star-edge-glow{display:none}#game[data-state=ready] #orbit{opacity:.65}@media(prefers-reduced-motion:reduce){.orbit-glow{transition:none}}
+
+/* Reveal the original Figma tick artwork clockwise from six o'clock. */
+.timer-face .timer-ticks{opacity:.28;filter:grayscale(1) brightness(1.5)}
+.timer-face .timer-ticks-filled{opacity:1;filter:brightness(0) invert(1);mask-image:conic-gradient(from 180deg,#000 0deg var(--countdown-angle,0deg),transparent var(--countdown-angle,0deg) 360deg);-webkit-mask-image:conic-gradient(from 180deg,#000 0deg var(--countdown-angle,0deg),transparent var(--countdown-angle,0deg) 360deg)}
+
+/* Reveal Figma's cyan → green → gold ring from the bottom clockwise. */
+.orbit-progress{background:none;filter:none;mask:none;-webkit-mask:none;transition:--ring-angle 220ms ease-out;mask-image:conic-gradient(from 180deg,#000 0deg var(--ring-angle,0deg),transparent var(--ring-angle,0deg) 360deg);-webkit-mask-image:conic-gradient(from 180deg,#000 0deg var(--ring-angle,0deg),transparent var(--ring-angle,0deg) 360deg)}
+.progress-art{position:absolute;inset:0;width:100%;height:100%}
+@property --ring-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+/* Frosted glass keeps the pause icon readable over the snowy branches. */
+#pause{border-radius:50%;overflow:hidden;isolation:isolate;background:rgba(63,153,203,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#pause img{pointer-events:none}#pause span{z-index:1}
+/* Inactive stars remain solid foreground objects above the progress ring. */
+.orbit-stars{z-index:4}
+.orbit-stars .star{opacity:1;filter:grayscale(1) brightness(.42) sepia(.35) saturate(1.7) hue-rotate(170deg)}
+.orbit-stars .star.earned{opacity:1;filter:drop-shadow(0 0 5px #ffce48)}
+
+/* Rounded arc mask preserves the original gradient artwork at both ends. */
+.orbit-progress{mask-image:var(--arc-mask);-webkit-mask-image:var(--arc-mask);mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat}
+/* Local experiment: disable colored hit, miss and combo flashes. */
+.orbit-glow{display:none}
+.orbit-stars .star:nth-child(2){transform:translateY(-20%)}
+/* Figma 106:4488 / Score 106:4483: 138×46 above the 210px ring. */
+.orbit-stars{left:17.142857%;top:-10.952381%;width:65.714286%;height:21.904762%;display:block}
+.orbit-stars .star{position:absolute;width:28.88913%;height:auto;transform-origin:center}
+.orbit-stars .star:first-child{left:8.0652%;top:9.196%;transform:rotate(-14deg)}
+.orbit-stars .star:nth-child(2){left:35.02174%;top:-5.80435%;transform:none}
+.orbit-stars .star:last-child{left:61.97826%;top:9.196%;transform:rotate(14deg)}
+
+/* Updated Figma 106:4473: stars sit 27px above the 210px circle. */
+.orbit-stars{top:-12.857143%}
+#orbit #judgment{color:#a4ebff}
+#orbit .combo-label{color:#ffda8a}
+#orbit #score{left:.238095%;letter-spacing:-.8cqw}
+.orbit-stars{top:calc(-12.857143% - 12px)}
+/* Normalize the baked highlight so the idle tick ring has no white segment. */
+.timer-face .timer-ticks:not(.timer-ticks-filled){filter:brightness(0) invert(1);opacity:.25}
+/* Checkpoints keep the same frosted appearance, including the starting dot. */
+.checkpoint.reached{background:#fff6;box-shadow:0 0 3px #85dfff}
+#orbit #judgment{color:#fff!important}
+/* Figma Timer 01 (101:3985): a compact 178px glass disc, without the thick ring. */
+#orbit.counting{width:49.444444%;top:calc(7.125% + 4.444444cqw);box-shadow:0 8px 24px rgba(0,22,85,.2);overflow:hidden;background:rgba(0,0,0,.04);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#orbit.counting>.orbit-base,.timer-face>img:first-child{display:none}
+#orbit.counting .timer-ticks{left:6.741573%;top:6.741573%;width:86.516854%;height:86.516854%}
+#orbit.counting #countdown{font-size:44.94382cqw;letter-spacing:-1.79775cqw;transform:translateY(.2809cqw)}
+/* Expand the countdown glass into the score dial before the first playable note. */
+#orbit{transition:width 420ms cubic-bezier(.2,.75,.25,1),top 420ms cubic-bezier(.2,.75,.25,1),box-shadow 420ms ease}
+#orbit .timer-face{display:block;opacity:0;visibility:hidden;transition:opacity 180ms ease,visibility 0s 180ms}
+#orbit.counting .timer-face{opacity:1;visibility:visible;transition:opacity 180ms ease}
+#orbit>.orbit-base{display:block;opacity:1;transition:opacity 350ms ease 70ms}
+#orbit.counting>.orbit-base{display:block;opacity:0;transition-delay:0s}
+#orbit .scoreboard{opacity:1!important;transform:translateY(0);transition:opacity 380ms ease 100ms,transform 420ms ease 100ms}
+#orbit.counting .scoreboard{visibility:visible;opacity:0!important;transform:translateY(7px);transition-delay:0s}
+#orbit .orbit-stars,#orbit .checkpoints,#orbit .orbit-progress{opacity:1;transition:opacity 300ms ease 120ms}
+#orbit.counting .orbit-stars,#orbit.counting .checkpoints,#orbit.counting .orbit-progress{visibility:visible;opacity:0;transition-delay:0s}
+@media(prefers-reduced-motion:reduce){#orbit,#orbit .scoreboard,#orbit .timer-face,#orbit>.orbit-base,#orbit .orbit-stars,#orbit .checkpoints,#orbit .orbit-progress{transition:none}}
+
+/* Keep the first countdown frame stable behind the start dialog. */
+#game[data-state=ready] #orbit{opacity:1;transition:none}
+#game[data-state=ready] #orbit *{transition:none}
