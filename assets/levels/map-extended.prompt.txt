@@ -1,0 +1,3 @@
+Built-in image_gen edit of map.png: extend only the bottom by 120 design px at viewport width 360px; preserve upper map and landmarks, continue snowdrifts, winding path and snowy rocks, calm empty area for a button. No added UI or characters. The runtime uses only the lower extension, preserving the original map artwork.
+
+Detail revision via built-in image_gen: edit only bottom 12%; add snow-laden evergreen treetops, lavender snow-capped rocks and a red berry bush within center crop x25–70%. Keep middle calm for button, upper scene unchanged. Runtime shows lower extension only.

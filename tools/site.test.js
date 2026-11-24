@@ -12,15 +12,17 @@ test('Published map and game have all local entry-point dependencies', async () 
   assert.doesNotMatch(map, /<iframe[^>]*\ssrc=/);
   assert.match(map, /id="map-loading"/);
   let mapBytes = 0;
-  for (const name of ['map', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star']) {
+  for (const name of ['map', 'map-bottom', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star']) {
     mapBytes += (await stat(new URL(`assets/levels/${name}.webp`, root))).size;
   }
-  assert.ok(mapBytes < 600_000, `Map artwork must stay under 600 KB; got ${mapBytes}`);
+  assert.ok(mapBytes < 850_000, `Map artwork must stay under 850 KB; got ${mapBytes}`);
   assert.doesNotMatch(map, /src="assets\/levels\//);
   assert.doesNotMatch(map, /<link[^>]*stylesheet/);
   assert.doesNotMatch(map, /<script[^>]*src="levels.js/);
   assert.match(map, /window.WinterMapAssets=/);
-  assert.ok(Buffer.byteLength(map) < 750_000, 'Single-page map must stay under 750 KB');
+  assert.match(map, /"lock":"data:image\/svg\+xml;base64,/);
+  assert.ok((await stat(new URL('assets/levels/lock.svg', root))).size > 0);
+  assert.ok(Buffer.byteLength(map) < 1_100_000, 'Single-page map must stay under 1100 KB');
   assert.match(map, /telegram.org\/js\/telegram-web-app.js/);
   for (const file of ['game.html', 'levels.js', 'levels.css', 'telegram.js', 'forest-game.js',
     'forest.css', 'game-hud.js', 'game-hud.css', 'assets/game-hud/progress-full.svg', 'assets/game-hud/progress-track.svg', 'assets/game-hud/ticks-uniform.svg', 'assets/game-hud/star.png', 'design/renderer.js', 'design/tokens.css', 'design/components.css',

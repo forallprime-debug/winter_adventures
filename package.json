@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tools/audio.test.js tools/forest-geometry.test.js tools/scoring.test.js tools/site.test.js tools/tracks.test.js",
+    "test": "node --test tools/audio.test.js tools/forest-geometry.test.js tools/levels.test.js tools/scoring.test.js tools/site.test.js tools/tracks.test.js",
     "start": "python3 -m http.server 8001",
     "test:legacy": "node --test tools/bosses.test.js",
     "build": "node tools/build-site.js",

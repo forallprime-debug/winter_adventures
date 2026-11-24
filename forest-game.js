@@ -1,4 +1,4 @@
-import './game-hud.js?v=orbit-prod-1';
+import './game-hud.js?v=figma-vector-1';
 import {trackForLevel} from './tracks.js';
 import {impact} from './telegram.js';
 import {MusicPlayer,AssetCache} from './audio.js';
@@ -110,8 +110,8 @@ canvas.onpointerdown=e=>{e.preventDefault();const r=canvas.getBoundingClientRect
 for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>release('p'+e.pointerId));
 const keys={KeyC:0,KeyB:1,KeyM:2,ArrowLeft:0,ArrowDown:1,ArrowRight:2};
 window.addEventListener('keydown',e=>{if(['INPUT','SELECT'].includes(document.activeElement.tagName))return;if(e.code==='Escape'||e.code==='Space'&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();state==='playing'?pause():state==='paused'?resume():null;return}if(keys[e.code]!==undefined&&state==='playing'){e.preventDefault();if(!e.repeat)press(keys[e.code],e.code)}});window.addEventListener('keyup',e=>release(e.code));window.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});media.addEventListener('ended',finish);media.addEventListener('error',()=>{if(state==='playing'){pause();$('pause-error').textContent='Ошибка воспроизведения. Вернись к началу и повтори тур.'}});
-$('start').onclick=start;$('again').onclick=start;$('pause').onclick=pause;$('resume').onclick=resume;$('leave').onclick=home;$('home').onclick=home;
-function frame(now){requestAnimationFrame(frame);ctx.clearRect(0,0,w,h);drawRoad(ctx,w,h,theme);drawZone(ctx,w,h,theme,flashes.map(t=>t>now));const t=clock();
+$('start').onclick=start;$('again').onclick=start;$('pause').onclick=pause;$('resume').onclick=resume;$('leave').onclick=()=>{if(fromMap)home();else location.href='levels.html'};$('home').onclick=home;
+function frame(now){requestAnimationFrame(frame);if(state==='paused')return;ctx.clearRect(0,0,w,h);drawRoad(ctx,w,h,theme);drawZone(ctx,w,h,theme,flashes.map(t=>t>now));const t=clock();
  if(state==='playing'){
   for(const n of notes){if(n.state==='pending'&&t-n.time>WINDOW){n.state='miss';miss('ПРОМАХ')}else if(n.state==='holding'){if(t>=n.end-.04)complete(n);else if(![...active.values()].includes(n.lane)&&t>(n.grace||0)){n.state='broken';miss('ОБРЫВ')}}}
   if(music.currentTime>=duration)finish();$('countdown').textContent=music.currentTime<countdownDuration?String(Math.ceil(3-music.currentTime*countdownRate)):'';

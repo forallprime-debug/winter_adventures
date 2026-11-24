@@ -11,7 +11,7 @@ const group = document.querySelector('#level-points');
 group.setAttribute('aria-busy', 'false');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let assetAttempt = 0;
-const mapAsset = name => window.WinterMapAssets?.[name] || `assets/levels/${name}.webp${assetAttempt ? `?retry=${assetAttempt}` : ''}`;
+const mapAsset = name => window.WinterMapAssets?.[name] || `assets/levels/${name}.${name === 'lock' ? 'svg' : 'webp'}${assetAttempt ? `?retry=${assetAttempt}` : name === 'map-bottom' ? '?v=details-1' : ''}`;
 const progressKey = 'game2.level-map.v1';
 let scores = Array(12).fill(0);
 let current = 0;
@@ -22,6 +22,16 @@ try {
     current = Number.isInteger(saved.current) && saved.current >= 0 && saved.current < 12 ? saved.current : 0;
   }
 } catch {}
+// Only a contiguous sequence of completed levels unlocks the next one.
+function nextUnfinishedLevel() { return scores.findIndex(stars => stars === 0); }
+function isLevelUnlocked(index) {
+  const next = nextUnfinishedLevel();
+  return next === -1 || index <= next;
+}
+current = Math.max(0, nextUnfinishedLevel());
+const mapActions = document.querySelector('#map-actions');
+const playCurrent = document.querySelector('#play-current');
+playCurrent.addEventListener('click', () => launchLevel(current));
 const gameFrame = document.querySelector('#level-game');
 const gameLoading = document.querySelector('#game-loading');
 let selected = null;
@@ -34,7 +44,7 @@ const buttons = points.map(([x,y], index) => {
   button.style.left = `${x}px`;
   button.style.top = `${y + 200}px`;
   button.dataset.level = index + 1;
-  button.innerHTML = '<img class="ice" alt="" width="62" height="57"><span class="level-number"></span><span class="level-stars" aria-hidden="true"></span>';
+  button.innerHTML = '<img class="ice" alt="" width="62" height="57"><span class="level-number"></span><img class="level-lock" alt="" width="24" height="26" hidden><span class="level-stars" aria-hidden="true"></span>';
   button.addEventListener('click', () => launchLevel(index));
   document.querySelector('#level-points').append(button);
   return button;
@@ -42,16 +52,25 @@ const buttons = points.map(([x,y], index) => {
 
 function render() {
   buttons.forEach((button, index) => {
-    const state = index === current ? 'current' : scores[index] ? 'done' : 'future';
+    const unlocked = isLevelUnlocked(index);
+    const state = !unlocked ? 'future' : index === current ? 'current' : scores[index] ? 'done' : 'future';
+    // Keep locked buttons focusable and clickable for feedback; launchLevel guards entry.
+    button.setAttribute('aria-disabled', String(!unlocked));
+    button.dataset.locked = String(!unlocked);
     button.dataset.state = state;
     button.querySelector('.ice').src = mapAsset(`point-${state}`);
+    const lock = button.querySelector('.level-lock');
+    lock.src = mapAsset('lock');
+    lock.hidden = unlocked;
+    if (unlocked) lock.getAnimations().forEach(animation => animation.cancel());
     button.querySelector('.level-number').textContent = state === 'current' ? '' : String(index + 1).padStart(2, '0');
     button.querySelector('.level-stars').innerHTML = state === 'done'
       ? `<img src="${mapAsset('star')}" alt="">`.repeat(scores[index]) : '';
-    button.setAttribute('aria-label', `Уровень ${index + 1}: ${state === 'current' ? 'текущий' : state === 'done' ? `пройден, звёзд: ${scores[index]}` : 'ещё не пройден'}. Начать игру`);
+    button.setAttribute('aria-label', `Уровень ${index + 1}: ${state === 'current' ? 'текущий' : state === 'done' ? `пройден, звёзд: ${scores[index]}` : 'заблокирован'}.${unlocked ? ' Начать игру' : ' Сначала пройдите предыдущий уровень'}`);
     if (state === 'current') button.setAttribute('aria-current', 'step');
     else button.removeAttribute('aria-current');
   });
+  playCurrent.setAttribute('aria-label', `Играть: уровень ${current + 1}`);
   status.textContent = `Текущий уровень ${current + 1} из 12`;
 }
 
@@ -63,12 +82,25 @@ function characterPosition(index) {
 function revealCurrent(behavior = 'smooth') {
   const top = (points[current][1] + 119) * scale;
   const bottom = (points[current][1] + 276) * scale;
-  if (top < viewport.scrollTop + 24 || bottom > viewport.scrollTop + viewport.clientHeight - 24) {
-    viewport.scrollTo({top: (top + bottom - viewport.clientHeight) / 2, behavior});
+  if (top < viewport.scrollTop + 24 || bottom > viewport.scrollTop + viewport.clientHeight - 110 * scale - 24) {
+    viewport.scrollTo({top: (top + bottom - viewport.clientHeight + 110 * scale) / 2, behavior});
   }
 }
 
 function launchLevel(index) {
+  if (!isLevelUnlocked(index)) {
+    const lock = buttons[index].querySelector('.level-lock');
+    lock.getAnimations().forEach(animation => animation.cancel());
+    if (!reducedMotion.matches) {
+      // Ease each swing separately so the lock slows down at every turning point.
+      lock.animate([[0, 1], [-10, 1.12], [10, 1.16], [-6, 1.12], [6, 1.07], [-2, 1.03], [0, 1]].map(([angle, size]) => ({
+        transform: `rotate(${angle}deg) scale(${size})`, easing: 'cubic-bezier(0.37, 0, 0.63, 1)'
+      })), {duration: 520, easing: 'linear'});
+    }
+    status.textContent = `Уровень ${index + 1} закрыт. Сначала пройдите предыдущий уровень.`;
+    return;
+  }
+  mapActions.hidden = true;
   selected = index;
   setTelegramBack(() => {
     gameFrame.contentWindow.levelGame?.back();
@@ -96,7 +128,7 @@ window.addEventListener('message', event => {
   if (data?.type === 'level-game-result' && selected !== null && data.level === selected + 1 &&
       Number.isInteger(data.stars) && data.stars >= 0 && data.stars <= 3) {
     scores[selected] = Math.max(scores[selected], data.stars);
-    if (data.stars > 0) current = (selected + 1) % points.length;
+    if (data.stars > 0) current = Math.max(0, nextUnfinishedLevel());
     try { localStorage.setItem(progressKey, JSON.stringify({scores, current})); } catch {}
     render();
   }
@@ -104,6 +136,7 @@ window.addEventListener('message', event => {
 });
 
 function returnToMap() {
+  mapActions.hidden = false;
   selected = null;
   setTelegramBack(null);
   gameFrame.hidden = true;
@@ -128,12 +161,15 @@ new ResizeObserver(() => {
   const firstLayout = !space.style.height;
   scale = viewport.clientWidth / 360;
   map.style.setProperty('--map-scale', scale);
-  space.style.height = `${1000 * scale}px`;
-  viewport.scrollTop = firstLayout ? Math.max(0, (points[current][1] + 200) * scale - viewport.clientHeight * .7) : mapScroll * scale;
+  space.style.height = `${1120 * scale}px`;
+  // Open slightly above the previous scroll position, bringing the lower points closer to Play.
+  const initialScroll = Math.max(0, (points[current][1] + 200) * scale - viewport.clientHeight * .7);
+  const maxScroll = Math.max(0, 1120 * scale - viewport.clientHeight);
+  viewport.scrollTop = firstLayout ? Math.max(0, Math.min(initialScroll, maxScroll) - 24 * scale) : mapScroll * scale;
 }).observe(viewport);
 
 // Load the map before spending bandwidth on the game's music and textures.
-const mapAssets = ['map', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star'];
+const mapAssets = ['map', 'map-bottom', 'play-button', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star', 'lock'];
 let loadingMap = false;
 async function loadMap() {
   if (loadingMap) return;
@@ -164,8 +200,11 @@ async function loadMap() {
       image.src = mapAsset(name);
     })));
     document.querySelector('.map-background img').src = mapAsset('map');
+    document.querySelector('.map-bottom img').src = mapAsset('map-bottom');
     document.querySelector('.snowman').src = mapAsset('snowman');
     character.src = mapAsset('character');
+    playCurrent.querySelector('img').src = mapAsset('play-button');
+    playCurrent.disabled = false;
     render();
     document.body.classList.remove('map-pending');
     overlay.hidden = true;

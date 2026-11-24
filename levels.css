@@ -6,13 +6,14 @@ button { cursor: pointer; touch-action: manipulation; }
 .map-viewport::-webkit-scrollbar { display: none; }
 .map-space { position: relative; width: 100%; }
 /* One Figma coordinate system for the artwork, buttons and character. */
-.level-map { position: absolute; width: 360px; height: 1000px; transform: scale(var(--map-scale, 1)); transform-origin: top left; overflow: hidden; }
+.level-map { position: absolute; width: 360px; height: 1120px; transform: scale(var(--map-scale, 1)); transform-origin: top left; overflow: hidden; }
 .map-background { position: absolute; left: -100px; top: 0; width: 558px; height: 1000px; overflow: hidden; pointer-events: none; }
 .map-background img { position: absolute; left: -9.43%; top: 0; width: 119.33%; height: 100%; max-width: none; }
 .snowman { position: absolute; left: -3px; top: 874px; width: 69px; height: 89px; transform: scaleX(-1); pointer-events: none; }
 .level-point { position: absolute; width: 62px; height: 76px; padding: 0; border: 0; background: transparent; color: white; -webkit-tap-highlight-color: transparent; }
 .level-point .ice { position: absolute; left: 0; top: 18px; width: 62px; height: 57px; pointer-events: none; }
 .level-number { position: absolute; top: 31px; left: 18px; width: 24px; font: 700 15.429px/normal ui-rounded, 'SF Pro Rounded', system-ui, sans-serif; text-align: center; }
+.level-lock { position: absolute; left: 19px; top: 41px; width: 24px; height: 26px; transform-origin: 50% 62%; pointer-events: none; }
 .level-stars { position: absolute; top: 3px; left: 0; width: 62px; height: 20px; pointer-events: none; }
 .level-stars img { position: absolute; width: 17.333px; height: 17.333px; object-fit: cover; }
 .level-stars img:nth-child(1) { left: 4.84px; top: 1.84px; transform: rotate(-14deg); }
@@ -35,3 +36,21 @@ button { cursor: pointer; touch-action: manipulation; }
 .map-loading { position: fixed; inset: 0; z-index: 10; display: grid; place-content: center; gap: 16px; padding: 32px; text-align: center; background: #102b53; color: #f7fbff; }
 .map-loading p { max-width: 320px; line-height: 1.5; }
 .map-loading button { padding: 14px 24px; border: 1px solid #ffe194; border-radius: 18px; background: #29436a; color: #fff; font: inherit; }
+
+.level-point[data-locked="true"] { cursor: pointer; }
+@media (hover: hover) { .level-point[data-locked="true"]:hover .ice { filter: none; } }
+
+/* 120px extra artwork at the 360px design width; keep existing landmarks fixed. */
+.map-bottom{position:absolute;left:-100px;top:976px;width:558px;height:144px;overflow:hidden;pointer-events:none;mask-image:linear-gradient(transparent,#000 24px);-webkit-mask-image:linear-gradient(transparent,#000 24px)}
+.map-bottom img{position:absolute;left:-9.43%;top:-976px;width:119.33%;height:1120px;max-width:none}
+
+.map-actions{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,560px);aspect-ratio:360/110;container-type:inline-size;z-index:3;pointer-events:none;background:linear-gradient(to bottom,rgba(54,79,140,0),rgba(54,79,140,.5));padding-bottom:var(--app-safe-bottom,env(safe-area-inset-bottom,0px))}
+#play-current{position:absolute;left:50%;bottom:calc(4.444444cqw + var(--app-safe-bottom,env(safe-area-inset-bottom,0px)));transform:translateX(-50%);width:56.111111%;aspect-ratio:202/72;border:0;padding:0;background:none;pointer-events:auto;filter:drop-shadow(0 4px 12px rgba(54,255,224,.3));-webkit-tap-highlight-color:transparent}
+#play-current img{display:block;width:100%;height:100%;pointer-events:none}
+#play-current span{position:absolute;inset:0;display:grid;place-items:center;transform:translate(-.277778cqw,-.277778cqw);font-size:5.555556cqw;font-weight:700;letter-spacing:-.111111cqw;color:rgba(255,255,255,.95)}
+#play-current:active{transform:translateX(-50%) scale(.96)}
+#play-current:disabled{cursor:wait}
+.map-pending .map-actions{visibility:hidden}
+@media(prefers-reduced-motion:reduce){#play-current:active{transform:translateX(-50%)}}
+
+#play-current{font-family:ui-rounded,'SF Pro Rounded',system-ui,sans-serif;font-weight:700}

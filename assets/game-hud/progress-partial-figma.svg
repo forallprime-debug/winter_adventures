@@ -1,0 +1,20 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="116" height="209.67" viewBox="0 0 116 209.67" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Ellipse 2" filter="url(#filter0_i_0_23)">
+<mask id="stroke0_0_23">
+<path d="M105 198.67C80.7518 198.67 57.4415 189.3 39.9397 172.517C22.438 155.734 12.0989 132.837 11.0827 108.61C10.0665 84.3828 18.4518 60.7003 34.4866 42.5106C50.5214 24.3209 72.9651 13.0313 97.1282 11.0006" stroke-width="22" stroke-linecap="round" stroke="white"/>
+</mask>
+<g clip-path="url(#paint0_angular_0_23_clip_path)" data-figma-skip-parse="true" mask="url(#stroke0_0_23)"><g transform="matrix(0 0.105 -0.105 0 105 104.67)"><foreignObject x="-1838.1" y="-1838.1" width="3676.19" height="3676.19"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(34, 144, 249, 1) 0deg,rgba(51, 217, 155, 1) 69.5338deg,rgba(221, 186, 32, 1) 197.101deg,rgba(245, 110, 37, 1) 341.256deg,rgba(33, 140, 255, 1) 355.913deg,rgba(34, 144, 249, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><path d="M105 198.67C80.7518 198.67 57.4415 189.3 39.9397 172.517C22.438 155.734 12.0989 132.837 11.0827 108.61C10.0665 84.3828 18.4518 60.7003 34.4866 42.5106C50.5214 24.3209 72.9651 13.0313 97.1282 11.0006" stroke-width="22" stroke-linecap="round" stroke="black" stroke-opacity="0" data-figma-gradient-stroke="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.20122343301773071,&#34;g&#34;:0.85417294502258301,&#34;b&#34;:0.60862541198730469,&#34;a&#34;:1.0},&#34;position&#34;:0.19314946234226227},{&#34;color&#34;:{&#34;r&#34;:0.8691406250,&#34;g&#34;:0.73286116123199463,&#34;b&#34;:0.12579752504825592,&#34;a&#34;:1.0},&#34;position&#34;:0.54750263690948486},{&#34;color&#34;:{&#34;r&#34;:0.96394228935241699,&#34;g&#34;:0.43320921063423157,&#34;b&#34;:0.14742988348007202,&#34;a&#34;:1.0},&#34;position&#34;:0.94793212413787842},{&#34;color&#34;:{&#34;r&#34;:0.13095328211784363,&#34;g&#34;:0.55099254846572876,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.98864769935607910}],&#34;transform&#34;:{&#34;m00&#34;:1.2858791925674483e-14,&#34;m01&#34;:-210.0,&#34;m02&#34;:210.00009155273438,&#34;m10&#34;:210.0,&#34;m11&#34;:1.2858791925674483e-14,&#34;m12&#34;:-0.32957056164741516},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.20122343301773071,&#34;g&#34;:0.85417294502258301,&#34;b&#34;:0.60862541198730469,&#34;a&#34;:1.0},&#34;position&#34;:0.19314946234226227},{&#34;color&#34;:{&#34;r&#34;:0.8691406250,&#34;g&#34;:0.73286116123199463,&#34;b&#34;:0.12579752504825592,&#34;a&#34;:1.0},&#34;position&#34;:0.54750263690948486},{&#34;color&#34;:{&#34;r&#34;:0.96394228935241699,&#34;g&#34;:0.43320921063423157,&#34;b&#34;:0.14742988348007202,&#34;a&#34;:1.0},&#34;position&#34;:0.94793212413787842},{&#34;color&#34;:{&#34;r&#34;:0.13095328211784363,&#34;g&#34;:0.55099254846572876,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.98864769935607910}],&#34;visible&#34;:true}"/>
+</g>
+<defs>
+<filter id="filter0_i_0_23" x="0" y="0" width="116" height="209.67" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.8 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_0_23"/>
+</filter>
+<clipPath id="paint0_angular_0_23_clip_path"><rect x="-88" y="-88" width="292" height="385.67"/></clipPath></defs>
+</svg>

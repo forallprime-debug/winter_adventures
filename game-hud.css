@@ -33,7 +33,7 @@
 #orbit #judgment{color:#a4ebff}
 #orbit .combo-label{color:#ffda8a}
 #orbit #score{left:.238095%;letter-spacing:-.8cqw}
-.orbit-stars{top:calc(-12.857143% - 12px)}
+.orbit-stars{top:-10.952381%}
 /* Normalize the baked highlight so the idle tick ring has no white segment. */
 .timer-face .timer-ticks:not(.timer-ticks-filled){filter:brightness(0) invert(1);opacity:.25}
 /* Checkpoints keep the same frosted appearance, including the starting dot. */
@@ -59,3 +59,20 @@
 /* Keep the first countdown frame stable behind the start dialog. */
 #game[data-state=ready] #orbit{opacity:1;transition:none}
 #game[data-state=ready] #orbit *{transition:none}
+
+/* Figma image fill: square crop of the full-resolution source PNG. */
+.orbit-stars .star{height:86.6667%;object-fit:cover;object-position:center;image-rendering:auto}
+
+/* Pause sheet from Figma 181:1473, over the frozen live game. */
+#paused.pause-overlay{padding:0;display:flex;align-items:flex-end;justify-content:center;overflow-y:auto;background:rgba(0,82,131,.32);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);z-index:8}
+.pause-sheet{width:100%;display:flex;flex-direction:column;align-items:center;gap:6.666667cqw;padding:6.666667cqw 0 calc(4.444444cqw + var(--app-safe-bottom,env(safe-area-inset-bottom,0px)));color:rgba(255,255,255,.95);border-radius:24px 24px 0 0;text-align:center;font-family:ui-rounded,'SF Pro Rounded',system-ui,sans-serif}
+.pause-sheet header{width:85.555556%;display:flex;flex-direction:column;gap:1.111111cqw}
+.pause-sheet h2{margin:0;font-size:8.888889cqw;line-height:1.2;font-weight:700;letter-spacing:-.177778cqw}
+.pause-sheet header p{margin:0;font-size:5cqw;line-height:1.2;font-weight:500;opacity:.8}
+.pause-actions{width:65%;display:flex;flex-direction:column;align-items:center}
+.pause-actions button{position:relative;width:100%;height:20cqw;padding:0;border:0;background:none;color:inherit;font:700 5cqw/1.2 ui-rounded,'SF Pro Rounded',system-ui,sans-serif;letter-spacing:-.1cqw;cursor:pointer}
+#resume img{position:absolute;left:50%;top:0;transform:translateX(-50%);width:56.111111cqw;height:20cqw;pointer-events:none}
+#resume span{position:relative;display:block;transform:translate(-.138889cqw,-.138889cqw)}
+#resume:active{transform:scale(.96)}
+#leave{filter:drop-shadow(0 4px 12px rgba(54,255,224,.3))}
+#pause-error{max-width:85%;margin:0;font-size:14px}

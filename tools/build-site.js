@@ -22,13 +22,14 @@ for(const track of JSON.parse(await readFile(path.join(root,'tracks.json'),'utf8
 await cp(path.join(root, 'index.html'), path.join(output, 'game.html'));
 let map = (await readFile(path.join(root, 'levels.html'), 'utf8'))
   .replace('data-src="index.html?from=map', 'data-src="game.html?from=map');
-// Ship the map as one response: WebViews must not need seven more successful
-// CDN connections before the first screen can be drawn.
+// Ship the map and all its artwork in one response, including the lock.
 const images = {};
-for (const name of ['map', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star']) {
-  const data = await readFile(path.join(root, `assets/levels/${name}.webp`));
-  images[name] = `data:image/webp;base64,${data.toString('base64')}`;
-  map = map.replaceAll(`src="assets/levels/${name}.webp"`, `data-map-asset="${name}"`);
+for (const name of ['map', 'map-bottom', 'play-button', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star', 'lock']) {
+  const extension = name === 'lock' ? 'svg' : 'webp';
+  const mime = name === 'lock' ? 'image/svg+xml' : 'image/webp';
+  const data = await readFile(path.join(root, `assets/levels/${name}.${extension}`));
+  images[name] = `data:${mime};base64,${data.toString('base64')}`;
+  map = map.replaceAll(`src="assets/levels/${name}.${extension}"`, `data-map-asset="${name}"`);
 }
 for (const file of ['design/tokens.css', 'levels.css']) {
   const css = await readFile(path.join(root, file), 'utf8');
