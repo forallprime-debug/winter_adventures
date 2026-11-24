@@ -19,13 +19,13 @@ export function setTelegramBack(handler) {
   if (supported('6.1')) attempt(() => handler ? app.BackButton.show() : app.BackButton.hide());
 }
 
-export function impact() {
+export function impact(style = 'light') {
   if (window.parent !== window && window.parent.WinterTelegram) {
-    window.parent.WinterTelegram.impact();
+    window.parent.WinterTelegram.impact(style);
   } else if (supported('6.1')) {
-    attempt(() => app.HapticFeedback.impactOccurred('light'));
+    attempt(() => app.HapticFeedback.impactOccurred(style));
   } else {
-    attempt(() => navigator.vibrate?.(18));
+    attempt(() => navigator.vibrate?.(style === 'heavy' ? 100 : 18));
   }
 }
 
@@ -56,4 +56,15 @@ if (window.parent === window) {
   }
   window.addEventListener('telegram-ready', initializeTelegram);
   initializeTelegram();
+}
+
+// Capture clicks before navigation and before handlers hide their buttons.
+export function bindButtonHaptics() {
+ document.addEventListener?.('click', event => {
+  const target=event.target?.closest?.('button,a[href]');
+  if(target && !target.disabled)impact();
+ },true);
+ document.addEventListener?.('change',event=>{
+  if(event.target?.matches?.('select,input[type="range"]'))impact();
+ });
 }

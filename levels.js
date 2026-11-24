@@ -1,4 +1,5 @@
-import {setTelegramBack, impact} from './telegram.js';
+import {setTelegramBack, bindButtonHaptics} from './telegram.js';
+bindButtonHaptics();
 // Coordinates from Figma Start (80:2622), with the full map's 200px top restored.
 const points = [[74,704],[89,628],[61,554],[137,509],[207,444],[177,360],
   [103,315],[28,277],[41,195],[127,160],[209,119],[202,30]];
@@ -45,7 +46,7 @@ const buttons = points.map(([x,y], index) => {
   button.style.top = `${y + 200}px`;
   button.dataset.level = index + 1;
   button.innerHTML = '<img class="ice" alt="" width="62" height="57"><span class="level-number"></span><img class="level-lock" alt="" width="24" height="26" hidden><span class="level-stars" aria-hidden="true"></span>';
-  button.addEventListener('click', () => { impact(); launchLevel(index); });
+  button.addEventListener('click', () => launchLevel(index));
   document.querySelector('#level-points').append(button);
   return button;
 });

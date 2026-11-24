@@ -45,7 +45,7 @@ function mapHarness({scores = Array(12).fill(0), reducedMotion = false} = {}) {
     localStorage: {getItem: () => JSON.stringify({scores, current: 11})},
     matchMedia: () => reduced,
     ResizeObserver: class {observe() {}},
-    Image: class {}, setTimeout() { return 0; }, setTelegramBack() {}, impact() {},
+    Image: class {}, setTimeout() { return 0; }, setTelegramBack() {}, bindButtonHaptics() {}, impact() {},
   });
   vm.runInContext(source, context);
   return {buttons: get('#level-points').children, get, starts};

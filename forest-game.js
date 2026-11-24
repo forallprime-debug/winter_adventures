@@ -1,6 +1,6 @@
 import './game-hud.js?v=figma-vector-1';
 import {trackForLevel} from './tracks.js';
-import {impact} from './telegram.js';
+import {impact, bindButtonHaptics} from './telegram.js';
 import {MusicPlayer,AssetCache} from './audio.js';
 import {preparedChart,nearest,judge,WINDOW,PERFECT_WINDOW} from './rhythm.js';
 import {starProgress,recordKey,tourMultiplier} from './scoring.js?v=hit-stars-1';
@@ -12,6 +12,8 @@ let mapLevel = null;
 let tracks=[],currentTrack={id:'duck-tales',title:'Ксения Ишкина — Утиные истории',audio:'Music/duck-tales-90.m4a',chart:'charts-duck-tales.json'};
 const preparedTracks=new Map();
 const notifyMap = data => { if (fromMap) window.parent.postMessage(data, location.origin); };
+bindButtonHaptics();
+let lastCountdownBeat=-1;
 const countdownRate=1.3,countdownDuration=3/countdownRate;
 const duration=90,active=new Map(),flashes=[0,0,0],sparks=[],pressedNotes=[];
 const reducedNoteMotion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -76,7 +78,7 @@ function flashStarEdges() {
   ], {duration: reduced ? 500 : 850, easing: 'ease-out'});
 }
 function updateHUD(){const r=starProgress(hits,notes.length);window.dispatchEvent(new CustomEvent('hud-progress',{detail:{percent:r.percent,stars:r.stars,score,combo,state}}));if(state==='playing'&&r.stars>earnedStars)flashStarEdges();earnedStars=r.stars;$('score').textContent=score.toLocaleString('ru-RU');$('multiplier').textContent='×'+tourMultiplier(combo);$('streak').textContent=combo>=5?`${combo} подряд`:'';$('meter').style.setProperty('--progress',r.percent+'%');$('meter').setAttribute('aria-valuenow',String(Math.round(r.percent)));$('meter').setAttribute('aria-valuetext',`${Math.floor(r.percent)}% нот трека сыграно, ${r.stars} из 3 звёзд`);document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('earned',r.stars>i))}
-async function start(){if(starting)return;if(!chart){load();return}starting=true;$('menu').hidden=true;$('result').hidden=true;$('countdown').textContent='3';$('start').disabled=true;$('again').disabled=true;$('judgment').style.opacity=0;feedbackUntil=0;try{music.stop();const play=music.play();await play;notes=chart.notes.map(n=>({...n,state:'pending'}));score=combo=maxCombo=hits=0;earnedStars=0;starGlowAnimation?.cancel();offset=Number($('offset').value)/1000;active.clear();sparks.length=0;pressedNotes.length=0;flashes.fill(0);setState('playing');$('start').blur();$('again').blur();updateHUD()}catch(e){setState('ready');$('status').textContent='Не удалось включить звук. Нажми «Начать тур» ещё раз.'}finally{starting=false;$('start').disabled=false;$('again').disabled=false}}
+async function start(){if(starting)return;if(!chart){load();return}starting=true;lastCountdownBeat=-1;$('menu').hidden=true;$('result').hidden=true;$('countdown').textContent='3';$('start').disabled=true;$('again').disabled=true;$('judgment').style.opacity=0;feedbackUntil=0;try{music.stop();const play=music.play();await play;notes=chart.notes.map(n=>({...n,state:'pending'}));score=combo=maxCombo=hits=0;earnedStars=0;starGlowAnimation?.cancel();offset=Number($('offset').value)/1000;active.clear();sparks.length=0;pressedNotes.length=0;flashes.fill(0);setState('playing');$('start').blur();$('again').blur();updateHUD()}catch(e){setState('ready');$('status').textContent='Не удалось включить звук. Нажми «Начать тур» ещё раз.'}finally{starting=false;$('start').disabled=false;$('again').disabled=false}}
 function complete(n){n.state='hit';score+=50*n.holdMultiplier;feedback('УДЕРЖАНО',theme.colors[n.lane]);sparks.push({lane:n.lane,at:performance.now()});updateHUD()}
 function resetInputs(){for(const n of notes)if(n.state==='holding'){n.state='broken';combo=0}active.clear();flashes.fill(0);updateHUD()}
 function pause(){if(state!=='playing')return;setState('paused');music.pause();active.clear();$('resume').focus()}
@@ -114,6 +116,7 @@ $('start').onclick=start;$('again').onclick=start;$('pause').onclick=pause;$('re
 function frame(now){requestAnimationFrame(frame);if(state==='paused')return;ctx.clearRect(0,0,w,h);drawRoad(ctx,w,h,theme);drawZone(ctx,w,h,theme,flashes.map(t=>t>now));const t=clock();
  if(state==='playing'){
   for(const n of notes){if(n.state==='pending'&&t-n.time>WINDOW){n.state='miss';miss('ПРОМАХ')}else if(n.state==='holding'){if(t>=n.end-.04)complete(n);else if(![...active.values()].includes(n.lane)&&t>(n.grace||0)){n.state='broken';miss('ОБРЫВ')}}}
+  const beat=Math.min(3,Math.floor(music.currentTime*countdownRate));if(beat!==lastCountdownBeat){lastCountdownBeat=beat;impact(beat===3?'heavy':'light')}
   if(music.currentTime>=duration)finish();$('countdown').textContent=music.currentTime<countdownDuration?String(Math.ceil(3-music.currentTime*countdownRate)):'';
  }
  const shown=state==='ready'?[{lane:1,time:t+2,duration:0,state:'pending'},{lane:0,time:t+1.35,duration:0,state:'pending'},{lane:2,time:t+.8,duration:0,state:'pending'}]:notes;
