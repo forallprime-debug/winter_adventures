@@ -30,16 +30,12 @@
 #home{height:15.555556cqw;display:flex;align-items:center;gap:1.944444cqw;padding:4.444444cqw 5.555556cqw;filter:drop-shadow(0 4px 12px rgba(54,255,224,.3))}
 #home img{width:5.555556cqw;height:5.555556cqw}
 
-#result-ring{z-index:0}#result-ring .result-track,#result-ring .result-fill,#result-ring .result-fill>img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
-.result-fill{mask-image:var(--result-mask);-webkit-mask-image:var(--result-mask);mask-size:100% 100%;-webkit-mask-size:100% 100%}
-.result-checkpoints{position:absolute;inset:0;z-index:1}
-#result-ring .result-checkpoint{position:absolute;width:2.857143%;height:2.857143%;max-width:none;transform:translate(-50%,-50%);border-radius:50%}
-.result-checkpoint.reached{filter:drop-shadow(0 0 3px #ffed57)}
+#result-ring{z-index:0}
+#result-ring>svg{display:block;width:100%;height:100%;overflow:visible}
 #result-stars .earned{filter:drop-shadow(0 0 5px #ffce48)}
-/* Match the warm translucent remainder in the results artwork. */
-#result-ring .result-track{filter:none;opacity:1}
-
-.result-fill-color{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 180deg,#fec207 0%,#fec207 28.535%,#f66e26 48.668%,#f66e26 100%);box-shadow:inset 0 0 12px 5px #fff9}
-
-/* Keep the ring behind even the translucent idle star artwork. */
-#result-ring{mask-image:url("assets/results/star-occlusion.webp");-webkit-mask-image:url("assets/results/star-occlusion.webp");mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat}
+/* Scale artwork uses 39.867px stars in a 138px group, centered over the 210px ring. */
+#result-stars{left:10cqw;top:.555556cqw;width:38.333333cqw;height:15.333333cqw}
+#result-stars img{width:11.074167cqw;height:11.074167cqw}
+#result-stars img:first-child{left:3.09075cqw;top:2.66575cqw}
+#result-stars img:nth-child(2){left:13.424083cqw;top:.749083cqw}
+#result-stars img:last-child{left:23.757417cqw;top:2.66575cqw}

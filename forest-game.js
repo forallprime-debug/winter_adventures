@@ -1,4 +1,4 @@
-import {showResult} from './results.js?v=character-fade-7';
+import {showResult} from './results.js?v=vector-scale-8';
 import './game-hud.js?v=figma-vector-1';
 import {trackForLevel} from './tracks.js';
 import {impact, bindButtonHaptics} from './telegram.js?v=all-haptics-1';

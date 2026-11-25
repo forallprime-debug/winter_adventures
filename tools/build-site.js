@@ -7,7 +7,7 @@ const output = path.join(root, '_site');
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
 const files = ['levels.html', 'levels.css', 'levels.js', 'telegram.js', 'forest.css',
-  'forest-game.js', 'game-hud.js', 'results.js', 'results.css', 'game-hud.css', 'audio.js', 'rhythm.js', 'scoring.js', 'charts-duck-tales.json', 'charts-mammoth.json', 'charts-zoo.json', 'charts-save-the-day.json', 'tracks.json', 'tracks.js',
+  'forest-game.js', 'game-hud.js', 'results.js', 'results-ring.js', 'results.css', 'game-hud.css', 'audio.js', 'rhythm.js', 'scoring.js', 'charts-duck-tales.json', 'charts-mammoth.json', 'charts-zoo.json', 'charts-save-the-day.json', 'tracks.json', 'tracks.js',
   'ui-kit.html', 'ui-kit.css', 'ui-kit.js'];
 for (const file of files) await cp(path.join(root, file), path.join(output, file));
 await cp(path.join(root, 'design'), path.join(output, 'design'), {recursive: true});
@@ -17,7 +17,10 @@ for (const directory of ['levels', 'winter', 'ui']) {
   });
 }
 await cp(path.join(root, 'assets/game-hud'), path.join(output, 'assets/game-hud'), {recursive:true});
-await cp(path.join(root,'assets/results'),path.join(output,'assets/results'),{recursive:true,filter:source=>!source.endsWith('.png')});
+await mkdir(path.join(output,'assets/results'),{recursive:true});
+for(const file of ['button.webp','character-win.webp','character-retry.webp','map-icon.svg','star.webp','star-idle.webp']) {
+  await cp(path.join(root,'assets/results',file),path.join(output,'assets/results',file));
+}
 await mkdir(path.join(output, 'Music'), {recursive: true});
 for(const track of JSON.parse(await readFile(path.join(root,'tracks.json'),'utf8')))await cp(path.join(root,track.audio),path.join(output,track.audio));
 await cp(path.join(root, 'index.html'), path.join(output, 'game.html'));

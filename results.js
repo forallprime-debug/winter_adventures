@@ -1,3 +1,4 @@
+import {RESULT_RING} from './results-ring.js';
 import {STAR_RATES} from './scoring.js';
 let activeAnimation;
 export function showResult({level=1,score=0,percent=0,combo=0,stars=0}, root=document){
@@ -11,13 +12,14 @@ export function showResult({level=1,score=0,percent=0,combo=0,stars=0}, root=doc
  if(ring.tagName==='IMG'){
   const replacement=root.createElement('div');replacement.id='result-ring';ring.replaceWith(replacement);ring=replacement;
  }
- ring.innerHTML='<img class="result-track" src="assets/results/ring-track.svg" alt=""><div class="result-fill"><div class="result-fill-color"></div></div><div class="result-checkpoints"></div>';
- const fill=ring.querySelector('.result-fill');
+ ring.innerHTML=RESULT_RING;
+ const reveal=ring.querySelector('.result-arc-reveal');
  const markers=[0,...STAR_RATES.map(rate=>rate*100)].map(value=>{
   const angle=(180+value*3.6)*Math.PI/180;
-  const point=root.createElement('img');point.src='assets/game-hud/checkpoint.svg';point.alt='';point.className='result-checkpoint';
-  point.style.left=`${50+44.7619*Math.sin(angle)}%`;point.style.top=`${50-44.7619*Math.cos(angle)}%`;
-  ring.querySelector('.result-checkpoints').append(point);return {point,value};
+  const point=root.createElementNS('http://www.w3.org/2000/svg','circle');
+  point.setAttribute('cx',105+94*Math.sin(angle));point.setAttribute('cy',105-94*Math.cos(angle));point.setAttribute('r','3');
+  point.setAttribute('fill','url(#resultDot)');point.setAttribute('fill-opacity','.6');
+  ring.querySelector('.result-vector-checkpoints').append(point);return {point,value};
  });
  root.querySelector('#result-score').textContent=score.toLocaleString('ru-RU');
  root.querySelector('#result-accuracy').textContent=`${Math.floor(percent)}%`;
@@ -33,9 +35,8 @@ export function showResult({level=1,score=0,percent=0,combo=0,stars=0}, root=doc
  const entrance=reduced?null:character.animate([{opacity:0,translate:'0 10px'},{opacity:1,translate:'0 0'}],{duration:320,easing:'ease-out',fill:'backwards'});
  function render(value,fraction=0){
   root.querySelector('#result-score').textContent=Math.round(score*fraction).toLocaleString('ru-RU');
-  const mask=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 210"><circle cx="105" cy="105" r="94" fill="none" stroke="white" stroke-width="22" stroke-linecap="round" pathLength="100" stroke-dasharray="${value} 100" transform="rotate(90 105 105)" opacity="${value>0?1:0}"/></svg>`;
-  fill.style.setProperty('--result-mask',`url("data:image/svg+xml,${encodeURIComponent(mask)}")`);
-  markers.forEach(({point,value:threshold})=>point.classList.toggle('reached',threshold>0&&value>=threshold));
+  reveal.setAttribute('stroke-dasharray',`${value} 100`);
+  reveal.setAttribute('opacity',value>0?'1':'0');
   starImages.forEach((star,i)=>{
    if(i<stars&&value>=STAR_RATES[i]*100&&!star.classList.contains('earned')){
     star.src='assets/results/star.webp';star.className='earned';
