@@ -1,4 +1,4 @@
-import {setTelegramBack, bindButtonHaptics} from './telegram.js';
+import {setTelegramBack, bindButtonHaptics} from './telegram.js?v=all-haptics-1';
 bindButtonHaptics();
 // Coordinates from Figma Start (80:2622), with the full map's 200px top restored.
 const points = [[74,704],[89,628],[61,554],[137,509],[207,444],[177,360],
@@ -12,7 +12,7 @@ const group = document.querySelector('#level-points');
 group.setAttribute('aria-busy', 'false');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let assetAttempt = 0;
-const mapAsset = name => window.WinterMapAssets?.[name] || `assets/levels/${name}.${name === 'lock' ? 'svg' : 'webp'}${assetAttempt ? `?retry=${assetAttempt}` : name === 'map-bottom' ? '?v=details-1' : ''}`;
+const mapAsset = name => window.WinterMapAssets?.[name] || `assets/levels/${name}.${name === 'lock' ? 'svg' : 'webp'}${assetAttempt ? `?retry=${assetAttempt}` : name === 'map-bottom' ? '?v=details-1' : name === 'point-current' ? '?v=orange-1' : ''}`;
 const progressKey = 'game2.level-map.v1';
 let scores = Array(12).fill(0);
 let current = 0;
@@ -66,7 +66,7 @@ function render() {
     if (unlocked) lock.getAnimations().forEach(animation => animation.cancel());
     button.querySelector('.level-number').textContent = state === 'current' ? '' : String(index + 1).padStart(2, '0');
     button.querySelector('.level-stars').innerHTML = state === 'done'
-      ? `<img src="${mapAsset('star')}" alt="">`.repeat(scores[index]) : '';
+      ? Array.from({length:3}, (_, star) => `<img class="${star < scores[index] ? 'earned' : 'idle'}" src="${mapAsset(star < scores[index] ? 'star' : 'star-idle')}" alt="">`).join('') : '';
     button.setAttribute('aria-label', `Уровень ${index + 1}: ${state === 'current' ? 'текущий' : state === 'done' ? `пройден, звёзд: ${scores[index]}` : 'заблокирован'}.${unlocked ? ' Начать игру' : ' Сначала пройдите предыдущий уровень'}`);
     if (state === 'current') button.setAttribute('aria-current', 'step');
     else button.removeAttribute('aria-current');
@@ -133,6 +133,7 @@ window.addEventListener('message', event => {
     try { localStorage.setItem(progressKey, JSON.stringify({scores, current})); } catch {}
     render();
   }
+  if (data?.type === 'level-game-next' && selected !== null && data.level === (selected + 1) % points.length + 1 && scores[selected] > 0) launchLevel(data.level - 1);
   if (data?.type === 'level-game-return') returnToMap();
 });
 
@@ -170,7 +171,7 @@ new ResizeObserver(() => {
 }).observe(viewport);
 
 // Load the map before spending bandwidth on the game's music and textures.
-const mapAssets = ['map', 'map-bottom', 'play-button', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star', 'lock'];
+const mapAssets = ['map', 'map-bottom', 'play-button', 'character', 'snowman', 'point-current', 'point-future', 'point-done', 'star', 'star-idle', 'lock'];
 let loadingMap = false;
 async function loadMap() {
   if (loadingMap) return;

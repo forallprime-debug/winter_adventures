@@ -54,3 +54,5 @@ button { cursor: pointer; touch-action: manipulation; }
 @media(prefers-reduced-motion:reduce){#play-current:active{transform:translateX(-50%)}}
 
 #play-current{font-family:ui-rounded,'SF Pro Rounded',system-ui,sans-serif;font-weight:700}
+
+.level-stars img.idle{filter:sepia(.25);opacity:1}

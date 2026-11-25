@@ -1,0 +1,45 @@
+#result.result-overlay{display:block;padding:0;background:rgba(0,22,131,.32);backdrop-filter:blur(50px);-webkit-backdrop-filter:blur(50px);z-index:9;overflow:hidden;color:rgba(255,255,255,.95);font-family:ui-rounded,'SF Pro Rounded',system-ui,sans-serif;container-type:size}
+#result[data-outcome=win]{background:linear-gradient(rgba(243,93,0,.7),rgba(255,189,79,.7))}
+.result-layout{position:relative;width:min(100%,45cqh);height:100%;margin:0 auto;text-align:center;container-type:inline-size}
+.result-heading{position:absolute;top:7.5%;left:7.222222%;width:85.555556%}
+#result-level{margin:0 0 2.222222cqw;font-size:5cqw;line-height:1.1667;font-weight:500;opacity:.8}
+#result-title{margin:0;font-size:8.888889cqw;line-height:1;font-weight:700;letter-spacing:-.177778cqw}
+.result-summary{position:absolute;left:7.222222%;top:23.375%;width:85.555556%;display:flex;flex-direction:column;align-items:center;gap:2.222222cqw}
+.result-medal{position:relative;width:58.333333cqw;height:66.666667cqw}
+#result-ring{position:absolute;left:0;top:8.333333cqw;width:58.333333cqw;height:58.333333cqw}
+#result-character{position:absolute;left:10.833333cqw;top:15.833333cqw;width:42.222222cqw;height:61.497586cqw;object-fit:fill;z-index:2}
+#result-stars{position:absolute;display:block;left:4.166667cqw;top:0;width:50cqw;height:16.666667cqw;margin:0;z-index:3}
+#result-stars img{position:absolute;width:14.444444cqw;height:14.444444cqw;object-fit:contain}
+#result-stars img:first-child{left:4.0326cqw;top:1.5326cqw;transform:rotate(-14deg)}
+#result-stars img:nth-child(2){left:17.511111cqw;top:-.966667cqw}
+#result-stars img:last-child{left:30.9882cqw;top:1.5326cqw;transform:rotate(14deg)}
+#result-stars .idle{opacity:1;filter:none}
+.result-metrics{width:58.333333cqw;display:flex;justify-content:space-between;position:relative;z-index:3}
+.result-metrics>div{width:26.944444cqw;text-align:left;opacity:.8}
+.result-metrics>div:last-child{text-align:right}
+.result-metrics strong{display:block;font-size:6.666667cqw;line-height:1.2;font-weight:600;letter-spacing:-.266667cqw}
+.result-metrics span{display:block;font-size:3.333333cqw;line-height:1.1667;opacity:.8}
+.result-total{margin-top:0;width:100%}.result-total>span{font-size:5cqw;line-height:1.1667;opacity:.8}
+#result-score{font-size:13.333333cqw;line-height:1.1875;font-weight:850;letter-spacing:-.533333cqw}
+.result-actions{position:absolute;bottom:calc(6.666667cqw + var(--app-safe-bottom,env(safe-area-inset-bottom,0px)));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:2.222222cqw}
+.result-actions button{border:0;background:none;color:inherit;padding:0;font:700 5cqw/1.2 ui-rounded,'SF Pro Rounded',system-ui,sans-serif;letter-spacing:-.1cqw;cursor:pointer}
+#again{position:relative;width:56.111111cqw;height:20cqw}
+#again>img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#again-label{position:relative;display:block;transform:translateY(-.138889cqw)}
+#again:active{transform:scale(.96)}
+#home{height:15.555556cqw;display:flex;align-items:center;gap:1.944444cqw;padding:4.444444cqw 5.555556cqw;filter:drop-shadow(0 4px 12px rgba(54,255,224,.3))}
+#home img{width:5.555556cqw;height:5.555556cqw}
+
+#result-ring{z-index:0}#result-ring .result-track,#result-ring .result-fill,#result-ring .result-fill>img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+.result-fill{mask-image:var(--result-mask);-webkit-mask-image:var(--result-mask);mask-size:100% 100%;-webkit-mask-size:100% 100%}
+.result-checkpoints{position:absolute;inset:0;z-index:1}
+#result-ring .result-checkpoint{position:absolute;width:2.857143%;height:2.857143%;max-width:none;transform:translate(-50%,-50%);border-radius:50%}
+.result-checkpoint.reached{filter:drop-shadow(0 0 3px #ffed57)}
+#result-stars .earned{filter:drop-shadow(0 0 5px #ffce48)}
+/* Match the warm translucent remainder in the results artwork. */
+#result-ring .result-track{filter:none;opacity:1}
+
+.result-fill-color{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 180deg,#fec207 0%,#fec207 28.535%,#f66e26 48.668%,#f66e26 100%);box-shadow:inset 0 0 12px 5px #fff9}
+
+/* Keep the ring behind even the translucent idle star artwork. */
+#result-ring{mask-image:url("assets/results/star-occlusion.webp");-webkit-mask-image:url("assets/results/star-occlusion.webp");mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat}

@@ -1,6 +1,7 @@
+import {showResult} from './results.js?v=character-fade-7';
 import './game-hud.js?v=figma-vector-1';
 import {trackForLevel} from './tracks.js';
-import {impact, bindButtonHaptics} from './telegram.js';
+import {impact, bindButtonHaptics} from './telegram.js?v=all-haptics-1';
 import {MusicPlayer,AssetCache} from './audio.js';
 import {preparedChart,nearest,judge,WINDOW,PERFECT_WINDOW} from './rhythm.js';
 import {starProgress,recordKey,tourMultiplier} from './scoring.js?v=hit-stars-1';
@@ -84,7 +85,7 @@ function resetInputs(){for(const n of notes)if(n.state==='holding'){n.state='bro
 function pause(){if(state!=='playing')return;setState('paused');music.pause();active.clear();$('resume').focus()}
 async function resume(){if(starting)return;starting=true;try{await music.play();for(const n of notes)if(n.state==='holding')n.grace=clock()+.4;setState('playing');$('resume').blur()}catch{$('pause-error').textContent='Не удалось продолжить. Попробуй ещё раз.'}finally{starting=false}}
 function home(){if(fromMap){setState('ready');music.stop();resetInputs();notifyMap({type:'level-game-return'});return}setState('ready');music.stop();resetInputs();$('countdown').textContent='';$('judgment').style.opacity=0;best();$('start').focus()}
-function finish(){if(state!=='playing')return;setState('ended');music.pause();active.clear();const r=starProgress(hits,notes.length);if(mapLevel)notifyMap({type:'level-game-result',level:mapLevel,stars:r.stars});storage.set(key(),Math.max(score,Number(storage.get(key()))));storage.set(key()+'.stars',Math.max(r.stars,Number(storage.get(key()+'.stars'))));$('result-stars').innerHTML=starsMarkup(r.stars);$('result-stars').setAttribute('aria-label',`${r.stars} из 3 звёзд`);$('result-title').textContent=r.stars?'Тур пройден!':'Попробуем ещё?';$('result-score').textContent=score.toLocaleString('ru-RU');$('result-detail').textContent=`${Math.floor(r.percent)}% попаданий · серия ${maxCombo}`;$('countdown').textContent='';$('again').focus()}
+function finish(){if(state!=='playing')return;setState('ended');music.pause();active.clear();const r=starProgress(hits,notes.length);if(mapLevel)notifyMap({type:'level-game-result',level:mapLevel,stars:r.stars});storage.set(key(),Math.max(score,Number(storage.get(key()))));storage.set(key()+'.stars',Math.max(r.stars,Number(storage.get(key()+'.stars'))));showResult({level:mapLevel||1,score,percent:r.percent,combo:maxCombo,stars:r.stars});$('again').focus()}
 function miss(text='МИМО'){combo=0;feedback(text,'#dbb9ee');updateHUD()}
 function noteTapFeedback(n) {
   // A successful hit only: do not buzz for empty taps or automatically completed holds.
@@ -112,8 +113,8 @@ canvas.onpointerdown=e=>{e.preventDefault();const r=canvas.getBoundingClientRect
 for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>release('p'+e.pointerId));
 const keys={KeyC:0,KeyB:1,KeyM:2,ArrowLeft:0,ArrowDown:1,ArrowRight:2};
 window.addEventListener('keydown',e=>{if(['INPUT','SELECT'].includes(document.activeElement.tagName))return;if(e.code==='Escape'||e.code==='Space'&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();state==='playing'?pause():state==='paused'?resume():null;return}if(keys[e.code]!==undefined&&state==='playing'){e.preventDefault();if(!e.repeat)press(keys[e.code],e.code)}});window.addEventListener('keyup',e=>release(e.code));window.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});media.addEventListener('ended',finish);media.addEventListener('error',()=>{if(state==='playing'){pause();$('pause-error').textContent='Ошибка воспроизведения. Вернись к началу и повтори тур.'}});
-$('start').onclick=start;$('again').onclick=start;$('pause').onclick=pause;$('resume').onclick=resume;$('leave').onclick=()=>{if(fromMap)home();else location.href='levels.html'};$('home').onclick=home;
-function frame(now){requestAnimationFrame(frame);if(state==='paused')return;ctx.clearRect(0,0,w,h);drawRoad(ctx,w,h,theme);drawZone(ctx,w,h,theme,flashes.map(t=>t>now));const t=clock();
+$('start').onclick=start;$('again').onclick=()=>{const won=starProgress(hits,notes.length).stars>0;if(won){const next=(mapLevel||1)%12+1;if(fromMap){notifyMap({type:'level-game-next',level:next});return}mapLevel=next;selectTrack(trackForLevel(tracks,next))}start()};$('pause').onclick=pause;$('resume').onclick=resume;$('leave').onclick=()=>{if(fromMap)home();else location.href='levels.html'};$('home').onclick=()=>{if(fromMap)home();else location.href='levels.html'};
+function frame(now){requestAnimationFrame(frame);if(state==='paused'||state==='ended')return;ctx.clearRect(0,0,w,h);drawRoad(ctx,w,h,theme);drawZone(ctx,w,h,theme,flashes.map(t=>t>now));const t=clock();
  if(state==='playing'){
   for(const n of notes){if(n.state==='pending'&&t-n.time>WINDOW){n.state='miss';miss('ПРОМАХ')}else if(n.state==='holding'){if(t>=n.end-.04)complete(n);else if(![...active.values()].includes(n.lane)&&t>(n.grace||0)){n.state='broken';miss('ОБРЫВ')}}}
   const beat=Math.min(3,Math.floor(music.currentTime*countdownRate));if(beat!==lastCountdownBeat){lastCountdownBeat=beat;impact(beat===3?'heavy':'light')}
@@ -126,8 +127,6 @@ function frame(now){requestAnimationFrame(frame);if(state==='paused')return;ctx.
  if(now>feedbackUntil){$('judgment').style.opacity=1;$('judgment').textContent='Ваш счёт';$('judgment').style.color=''}const orbit=document.querySelector('#orbit');orbit.classList.toggle('counting',(state==='ready'||(state==='playing'||state==='paused')&&music.currentTime<countdownDuration));if(state==='ready')$('countdown').textContent='3';orbit.style.setProperty('--countdown-angle',`${(Math.max(0,music.currentTime)*countdownRate%1)*360}deg`);
 }
 if (fromMap) {
-  $('leave').textContent = 'На карту';
-  $('home').textContent = 'На карту';
   const mapLink = document.querySelector('a[href="levels.html"]');
   mapLink.textContent = 'На карту';
   mapLink.onclick = event => { event.preventDefault(); home(); };
@@ -138,7 +137,7 @@ if (fromMap) {
     mapLevel = level;
     selectTrack(trackForLevel(tracks,level));
     document.querySelector('#menu .eyebrow').textContent = `Game Kids · уровень ${level}`;
-    document.querySelector('#result .eyebrow').textContent = `Уровень ${level} завершён`;
+    document.querySelector('#result-level').textContent = `Уровень ${level}`;
     root.setAttribute('aria-label', `Зимний ритм · уровень ${level}`);
     start();
   }};
