@@ -68,3 +68,5 @@ body.map-pending .map-snow i,body:has(.map-viewport[aria-hidden="true"]) .map-sn
 .map-snow i:nth-child(4n+2){--size:3px;--duration:20s;--alpha:.6}
 .map-snow i:nth-child(4n+3){--size:4px;--duration:24s;--alpha:.7}
 .map-snow i:nth-child(4n){--size:5px;--duration:28s;--alpha:.8}
+
+html:not(.keyboard-navigation) button:focus{outline:none}

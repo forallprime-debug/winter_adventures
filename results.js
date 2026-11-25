@@ -1,4 +1,4 @@
-import {RESULT_RING} from './results-ring.js';
+import {RESULT_RING} from './results-ring.js?v=angular-9';
 import {STAR_RATES} from './scoring.js';
 let activeAnimation;
 export function showResult({level=1,score=0,percent=0,combo=0,stars=0}, root=document){

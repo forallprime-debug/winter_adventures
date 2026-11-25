@@ -79,3 +79,11 @@
 
 #leave{display:flex;align-items:center;justify-content:center;gap:1.944444cqw}
 #leave>img{position:static;width:5.555556cqw;height:5.555556cqw;pointer-events:none}
+
+/* Shared native SVG progress artwork; the SVG owns the rounded reveal and paint. */
+#meter.orbit-progress{mask:none;-webkit-mask:none;background:none;filter:none;transition:none}
+#meter>svg{display:block;width:100%;height:100%;overflow:visible}
+
+/* Dialog autofocus should not draw a desktop focus rectangle after rhythm taps. */
+html:not(.keyboard-navigation) #game button:focus{outline:none}
+#again,#resume{border-radius:999px}

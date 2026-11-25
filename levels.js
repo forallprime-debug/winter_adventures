@@ -1,4 +1,6 @@
 import {setTelegramBack, bindButtonHaptics} from './telegram.js?v=all-haptics-1';
+window.addEventListener('keydown',event=>{if(event.key==='Tab')document.documentElement.classList.add('keyboard-navigation')},true);
+window.addEventListener('pointerdown',()=>document.documentElement.classList.remove('keyboard-navigation'),true);
 bindButtonHaptics();
 // Coordinates from Figma Start (80:2622), with the full map's 200px top restored.
 const points = [[74,704],[89,628],[61,554],[137,509],[207,444],[177,360],
