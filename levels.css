@@ -56,3 +56,11 @@ button { cursor: pointer; touch-action: manipulation; }
 #play-current{font-family:ui-rounded,'SF Pro Rounded',system-ui,sans-serif;font-weight:700}
 
 .level-stars img.idle{filter:sepia(.25);opacity:1}
+
+/* Sparse snowfall: 18 tiny compositor animations, no images, canvas or JS frame loop. */
+.map-snow{position:fixed;top:0;left:50%;width:min(100%,560px);height:100dvh;transform:translateX(-50%);overflow:hidden;pointer-events:none;z-index:3;contain:strict}
+.map-snow i{position:absolute;top:-12px;left:var(--x);width:var(--size);height:var(--size);border-radius:50%;background:#fff;opacity:var(--alpha);animation:map-snowfall var(--duration) linear var(--delay) infinite}
+@keyframes map-snowfall{from{transform:translate3d(-8px,0,0)}to{transform:translate3d(18px,calc(100dvh + 24px),0)}}
+body.map-pending .map-snow,body:has(.map-viewport[aria-hidden="true"]) .map-snow{visibility:hidden}
+body.map-pending .map-snow i,body:has(.map-viewport[aria-hidden="true"]) .map-snow i{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.map-snow{display:none}.map-snow i{animation:none}}
