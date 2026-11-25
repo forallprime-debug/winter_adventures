@@ -1,3 +1,4 @@
+import {victoryFireworks} from './victory-fireworks.js';
 import {RESULT_RING} from './results-ring.js?v=angular-9';
 import {STAR_RATES} from './scoring.js';
 let activeAnimation;
@@ -29,6 +30,7 @@ export function showResult({level=1,score=0,percent=0,combo=0,stars=0}, root=doc
  const starImages=[...group.children];
  root.querySelector('#again-label').textContent=win?'Следующий':'Ещё раз';
  result.hidden=false;
+ const stopFireworks=win?victoryFireworks(result):()=>{};
  const target=Math.max(0,Math.min(100,percent));
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const character=root.querySelector('#result-character');
@@ -48,5 +50,5 @@ export function showResult({level=1,score=0,percent=0,combo=0,stars=0}, root=doc
  let frame;let cancelled=false;const started=performance.now();
  function tick(now){if(cancelled)return;const elapsed=Math.max(0,now-started-320);const fraction=reduced?1:Math.min(1,elapsed/800);render(target*fraction,fraction);if(fraction<1)frame=requestAnimationFrame(tick)}
  frame=requestAnimationFrame(tick);
- activeAnimation=()=>{cancelled=true;cancelAnimationFrame(frame);entrance?.cancel();starImages.forEach(star=>star.getAnimations().forEach(animation=>animation.cancel()))};
+ activeAnimation=()=>{stopFireworks();cancelled=true;cancelAnimationFrame(frame);entrance?.cancel();starImages.forEach(star=>star.getAnimations().forEach(animation=>animation.cancel()))};
 }

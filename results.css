@@ -39,3 +39,6 @@
 #result-stars img:first-child{left:3.09075cqw;top:2.66575cqw}
 #result-stars img:nth-child(2){left:13.424083cqw;top:.749083cqw}
 #result-stars img:last-child{left:23.757417cqw;top:2.66575cqw}
+
+.victory-fireworks{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.result-layout{z-index:1}

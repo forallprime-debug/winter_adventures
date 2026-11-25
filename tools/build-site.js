@@ -7,7 +7,7 @@ const output = path.join(root, '_site');
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
 const files = ['levels.html', 'levels.css', 'levels.js', 'telegram.js', 'forest.css',
-  'forest-game.js', 'game-hud.js', 'game-focus.js', 'results.js', 'results-ring.js', 'ring-angular.js', 'results.css', 'game-hud.css', 'audio.js', 'rhythm.js', 'scoring.js', 'charts-duck-tales.json', 'charts-mammoth.json', 'charts-zoo.json', 'charts-save-the-day.json', 'tracks.json', 'tracks.js',
+  'forest-game.js', 'game-hud.js', 'game-focus.js', 'results.js', 'victory-fireworks.js', 'results-ring.js', 'ring-angular.js', 'results.css', 'game-hud.css', 'audio.js', 'rhythm.js', 'scoring.js', 'charts-duck-tales.json', 'charts-mammoth.json', 'charts-zoo.json', 'charts-save-the-day.json', 'tracks.json', 'tracks.js',
   'ui-kit.html', 'ui-kit.css', 'ui-kit.js'];
 for (const file of files) await cp(path.join(root, file), path.join(output, file));
 await cp(path.join(root, 'design'), path.join(output, 'design'), {recursive: true});
